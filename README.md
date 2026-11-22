@@ -1,6 +1,6 @@
-# Weekscape
+# Holodesk
 
-Your week, laid out as the landscape of your desktop.
+Your desktop as a live display of the week ahead.
 
 A desktop background that shows the coming week from all of your calendars, and how busy each day is going to be. It is the background itself, not a set of widgets, so the app lays everything out and nothing has to be placed by hand.
 

@@ -13,13 +13,24 @@ Make the desktop background show the calendar: this week's events from all of th
 - A browser tab that has to stay open is not: people close tabs.
 - Start with Windows, and with Lively as the host.
 - "Calendar wallpaper" as a name "sounds so basic"; the author asked for something more exciting.
-- Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author will pick from a list of suggestions.
+- Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author picked Holodesk from a list of suggestions.
 
 ## Name
 
-**Weekscape** (folder `weekscape`), chosen by Claude on 22 November 2026 after the author turned down `calendar-wallpaper`: the week, laid out as a landscape on the desktop. It also hints at a possible look, with busy days as peaks.
+**Holodesk** (folder `holodesk`), chosen by the author on 22 November 2026: the desktop as a holographic display of the week.
 
-The author found Weekscape not exciting enough either and asked for something modern and futuristic. Candidates offered on 22 November 2026, waiting for the author's choice: Precog, T-Minus, Holodesk, Strata, Kairo, Underglow, Sidereal, Timecast. None has been checked for clashes with existing projects yet. Until a choice is made the folder stays `weekscape`.
+How it got there, all on 22 November 2026:
+
+1. Claude named the folder `calendar-wallpaper`. The author: it "sounds so basic".
+2. Claude renamed it Weekscape. The author: not exciting enough; "something modern, something futuristic".
+3. Claude offered Precog, T-Minus, Holodesk, Strata, Kairo, Underglow, Sidereal and Timecast, with Precog as its own pick. The author chose Holodesk.
+
+Others using the name (searched 22 November 2026; trademarks not checked):
+
+- HoloDesk by Nanjing DSeeLab, on Apple's App Store: a utility for holographic 3D display screens.
+- HoloDesk by Plansysteme, on Microsoft's marketplace: a 3D collaboration service. This matters if Holodesk is ever listed in the Microsoft Store.
+- HoloDesk, a Microsoft Research demo from about 2011–12 (a Kinect and a see-through display).
+- No GitHub repository named holodesk was found.
 
 ## What already exists (searched 22 November 2026)
 
