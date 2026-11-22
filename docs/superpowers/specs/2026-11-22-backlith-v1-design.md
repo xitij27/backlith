@@ -40,7 +40,11 @@ Why: the author wants to see the week, and how loaded it is, at a glance, every 
 
 - **Platform:** Windows 10 22H2 and Windows 11 (Claude's call). Both have the WebView2 runtime or can get it from the installer.
 - **Licence:** GPL-3.0-or-later. Every dependency must be compatible. Code ported from Lively Wallpaper (GPL-3.0) is allowed.
-- **Where it's built:** the author develops on Ubuntu 24.04. Windows builds run on GitHub Actions' Windows runners. Windows-only behaviour can only be tested on a real Windows PC, by the author.
+- **Where it's built:** the author develops on Ubuntu 24.04. Windows builds run on GitHub Actions' Windows runners. Windows-only behaviour can only be tested on real Windows, by the author.
+- **Test machine:** a Windows tablet. Expect touch, high display scaling and battery power.
+  - The tablet may be ARM-based, so build installers for both x64 and ARM64 (Claude's call). The first checklist starts by noting its Windows version and system type, from Settings › System › About.
+  - The planner must work by touch as well as by mouse.
+  - When Windows' battery saver is on, redraw every 15 minutes instead of every 5 (Claude's call).
 - **Icons are always on top:** whatever is drawn as the wallpaper sits under the desktop icons. Tools stay readable only by keeping icons out of their way.
 - **Moving icons:** Windows lets an app read and set desktop icon positions through the desktop's shell view: `IShellWindows::FindWindowSW` with `SWC_DESKTOP`, then `IFolderView` / `IFolderView2` (`GetItemPosition`, `SelectAndPositionItems`, `SetCurrentFolderFlags`). Setting positions only sticks with "Auto arrange icons" off. A new file saved to the desktop goes into Windows' next free slot.
 - **Wallpaper files:** use PNG, because Windows recompresses JPEG wallpapers. Windows slideshow and Windows Spotlight replace the wallpaper, so they must be off.

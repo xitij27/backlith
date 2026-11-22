@@ -101,6 +101,7 @@ Decisions 2 to 5 below were replaced on 22 November 2026 by the v1 design in `do
 - The calendar should be elaborate, with each day as a column.
 - All three calendar mockups should be offered to users as styles to choose from.
 - Asked about performance: "I would want something which works efficiently in the background without taking too many resources." After hearing that a live web wallpaper keeps about 100–150 MB in use, chose option 1 in picture mode: one Tauri app, a small tray part, the wallpaper redrawn as an image.
+- For testing on Windows, the author has a Windows tablet ("a tablet with windows should be accessible now"). Its Windows version and whether it is x64 or ARM-based are not known yet.
 - The calendar settings and calendar links for v1 "look fine".
 - People should be able to upload their own schedules in a set format, added to the calendar. The format is Claude's to decide. The case the author gave: take a university timetable, have an LLM convert it into Backlith's format, upload it, and see it in the calendar.
 
