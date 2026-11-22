@@ -19,6 +19,7 @@ The scope grew the same day. In the author's words: "not just a calendar tool, b
 - Holodesk had to go: holodesk.com is a whole company. The author wants a name nobody has used before, and will choose from Claude's recommendations.
 - Chose Backlith.
 - Asked for it to be pushed as a public GitHub repository under the MIT licence.
+- After hearing how MIT and GPL differ, switched to GPL the same day: "we can keep ours as GPL license too".
 
 ## Name
 
@@ -57,8 +58,12 @@ Checked and dropped:
 ## Repository and licence
 
 - Public at https://github.com/xitij27/backlith since 22 November 2026, at the author's request. `main` is the only branch.
-- MIT licence, copyright Kshitij Parashar, written the same way as in the author's `jarvis` project.
-- Lively Wallpaper is GPL-3.0. Backlith only points Lively at a page and contains none of its code, so MIT is fine. Copying Lively's code into Backlith, for example its trick for placing a window behind the desktop icons in a future tray app, would bring GPL-3.0 with it. Write that part from scratch, or use a permissively licensed source.
+- Licence: GPL-3.0-or-later, copyright Kshitij Parashar (the name written as in the author's `jarvis` project). Chosen by the author on 22 November 2026.
+- It was MIT for the first few hours. The commits up to `0a3a91b` were published under MIT and stay MIT for anyone who copied them then; they hold only documents, no code.
+- Why GPL: changed versions that anyone gives out must stay open source, and Lively Wallpaper is GPL-3.0 too, so a future tray app can reuse Lively's code, for example its trick for placing a window behind the desktop icons.
+- "Or later" is the wording the GPL itself recommends. It lets the project move to a future GPL version without asking every contributor.
+- What GPL rules out: nobody can make a closed-source version, including the author, once code from other contributors or from Lively is inside. The author can still sell copies, as long as the source comes with them.
+- New source files start with `SPDX-License-Identifier: GPL-3.0-or-later`.
 
 ## What already exists (searched 22 November 2026)
 
