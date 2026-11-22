@@ -98,6 +98,8 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 - The author has very few desktop icons, but Backlith must work for people with many: they should be able to plan and organise their icons so the calendar stays usable.
 - The calendar should be elaborate, with each day as a column.
 - All three calendar mockups should be offered to users as styles to choose from.
+- The calendar settings and calendar links for v1 "look fine".
+- People should be able to upload their own schedules in a set format, added to the calendar. The format is Claude's to decide. The case the author gave: take a university timetable, have an LLM convert it into Backlith's format, upload it, and see it in the calendar.
 
 ### Found out
 
@@ -112,6 +114,19 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 - Backlith paints a soft labelled panel behind each zone on the wallpaper, so icons look boxed. Prior art: Stardock Fences, which is paid and closed source.
 - Backlith stays in the tray after the planner closes, and moves new desktop icons into a zone.
 - v1 plans the main screen only.
+
+### Calendar sources (Claude's calls, the author: "looks fine")
+
+- v1 reads calendar links (ICS addresses) from Google, Outlook.com, iCloud and others. Nobody signs in.
+- "Sign in with Google" and "Sign in with Microsoft" come after v1. Google reviews any public app that reads calendars, and until it passes only 100 people can use it, behind a warning screen. Work Microsoft accounts often need IT approval.
+- In the planner, the calendar block's settings: style, which calendars and their colours, show the weekend, length of a full day.
+
+### Uploaded schedules (Claude's proposal, waiting for the author)
+
+- Each uploaded file becomes its own calendar, with its own colour and on/off box.
+- Backlith accepts its own JSON format and `.ics` files.
+- Why JSON: LLMs write it reliably, a published JSON Schema lets Backlith check a file and give exact errors, and it reads easily. LLM-written `.ics` often breaks (line folding, repeat rules, time zones); CSV cannot hold repeats with exceptions cleanly; YAML breaks on indentation.
+- The planner has a "Copy prompt for an LLM" button: the format, an example and the rules, ready to paste into any LLM with the timetable. When an upload fails, a "Copy errors" button gives the LLM what to fix.
 
 ### Calendar styles
 
