@@ -13,10 +13,13 @@ Make the desktop background show the calendar: this week's events from all of th
 - A browser tab that has to stay open is not: people close tabs.
 - Start with Windows, and with Lively as the host.
 - "Calendar wallpaper" as a name "sounds so basic"; the author asked for something more exciting.
+- Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author will pick from a list of suggestions.
 
 ## Name
 
 **Weekscape** (folder `weekscape`), chosen by Claude on 22 November 2026 after the author turned down `calendar-wallpaper`: the week, laid out as a landscape on the desktop. It also hints at a possible look, with busy days as peaks.
+
+The author found Weekscape not exciting enough either and asked for something modern and futuristic. Candidates offered on 22 November 2026, waiting for the author's choice: Precog, T-Minus, Holodesk, Strata, Kairo, Underglow, Sidereal, Timecast. None has been checked for clashes with existing projects yet. Until a choice is made the folder stays `weekscape`.
 
 ## What already exists (searched 22 November 2026)
 
