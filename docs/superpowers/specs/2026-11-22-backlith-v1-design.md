@@ -1,6 +1,6 @@
 # Backlith v1 design
 
-Date: 22 November 2026. Status: draft, waiting for the author's approval.
+Date: 22 November 2026. Status: approved by the author on 22 November 2026 ("just proceed with the implementation"). Windows testing is deferred: "We will test it out on a proper Windows machine later."
 
 Background and research: `docs/decisions.md`. Calendar mockups: `docs/mockups/`.
 

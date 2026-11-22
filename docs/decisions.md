@@ -91,7 +91,7 @@ Decisions 2 to 5 below were replaced on 22 November 2026 by the v1 design in `do
 4. **PNG fallback.** On each run the script also draws the page to a PNG and sets it as the normal Windows wallpaper. If Lively quits or crashes, the desktop still shows a recent week. Use PNG, because Windows recompresses JPEG wallpapers. Windows Spotlight and slideshow must be off, or they replace the image.
 5. **Own tray app later, maybe.** A small Tauri app (same WebView2 engine) could replace Lively and the scheduled task with one install. The trick for placing a window behind the desktop icons is not documented by Microsoft, and Windows updates can break it. Lively already deals with that, so it comes first.
 
-## v1 design talk (22 November 2026, in progress)
+## v1 design talk (22 November 2026; design approved the same day)
 
 ### What the author said
 
@@ -105,6 +105,7 @@ Decisions 2 to 5 below were replaced on 22 November 2026 by the v1 design in `do
 - How Claude reaches the tablet (found 22 November 2026):
   - Claude in Chrome: the browser extension, in Edge on the tablet, is how the author's earlier testing "happened on the tablet" with no setup. The portfolio project's notes say the same: the only browser connected to it was an Edge on Windows with a touchscreen. It drives the browser only, so it can test the planner's interface by touch, but it cannot install Backlith, move icons or set the wallpaper. On 22 November it listed no connected browser; Edge has to be open on the tablet with the extension connected.
   - The tablet and the Ubuntu laptop are on the same private network, and the tablet answers there, but it had no remote shell, Remote Desktop or PowerShell remoting open. For the Windows parts, Claude proposed turning on Windows' OpenSSH server with key-only login, limited to that network, and made a key for it on the laptop at `~/.ssh/backlith_tablet`. Not set up yet.
+  - The author then chose to build first and test "on a proper Windows machine later", so the tablet set-up is on hold.
   - Commands run over SSH on Windows do not reach the signed-in desktop. Anything that changes the desktop (icons, wallpaper) has to be started inside the user's session, for example through a scheduled task that runs only when the user is logged on.
 - The calendar settings and calendar links for v1 "look fine".
 - People should be able to upload their own schedules in a set format, added to the calendar. The format is Claude's to decide. The case the author gave: take a university timetable, have an LLM convert it into Backlith's format, upload it, and see it in the calendar.
