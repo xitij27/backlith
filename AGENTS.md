@@ -1,4 +1,4 @@
-# Calendar wallpaper
+# Weekscape
 
 A Windows desktop background that shows the coming week from all of the author's calendars and how busy each day will be. See `README.md` for how it is meant to work.
 

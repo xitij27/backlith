@@ -12,6 +12,11 @@ Make the desktop background show the calendar: this week's events from all of th
 - A local app running in the background, the way Deskflow does, is fine.
 - A browser tab that has to stay open is not: people close tabs.
 - Start with Windows, and with Lively as the host.
+- "Calendar wallpaper" as a name "sounds so basic"; the author asked for something more exciting.
+
+## Name
+
+**Weekscape** (folder `weekscape`), chosen by Claude on 22 November 2026 after the author turned down `calendar-wallpaper`: the week, laid out as a landscape on the desktop. It also hints at a possible look, with busy days as peaks.
 
 ## What already exists (searched 22 November 2026)
 
@@ -75,7 +80,6 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 - Which calendars to read: Google, Outlook (personal or work), iCloud, others.
 - Working hours, and what counts as busy.
 - How the wallpaper looks.
-- The project's name. Claude chose the folder name `calendar-wallpaper`; the author may rename it.
 
 ## Sources
 
