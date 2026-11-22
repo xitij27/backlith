@@ -2,7 +2,9 @@
 
 Your desktop as a live display of the week ahead.
 
-A desktop background that shows the coming week from all of your calendars, and how busy each day is going to be. It is the background itself, not a set of widgets, so the app lays everything out and nothing has to be placed by hand.
+A desktop background that does useful work. It holds tools, laid out by the app as one background, not as a set of widgets, so nothing has to be placed by hand. The first tool shows the coming week from all of your calendars, and how busy each day is going to be.
+
+The name is not final: see [docs/decisions.md](docs/decisions.md).
 
 Windows comes first. Ubuntu may follow.
 

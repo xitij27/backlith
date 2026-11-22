@@ -6,6 +6,8 @@ Started on 22 November 2026. Add to this file whenever something is decided, fou
 
 Make the desktop background show the calendar: this week's events from all of the author's calendars, and how busy each day will be. The author wants it as the background, not as widgets: "As background, I won't need to worry too much about the placement." The app owns the layout. The author was open to widgets if they turned out better; they did not.
 
+The scope grew the same day. In the author's words: "not just a calendar tool, but really something which improves the productiveness of your wallpaper in the background. Like, it could also hold other tools, not just calendar." So the project is a background that holds tools, and the calendar is the first of them. The data file and the page should be built so more tools can be added.
+
 ## What the author said
 
 - It is mainly for Windows. The author's own machine runs Ubuntu.
@@ -14,16 +16,18 @@ Make the desktop background show the calendar: this week's events from all of th
 - Start with Windows, and with Lively as the host.
 - "Calendar wallpaper" as a name "sounds so basic"; the author asked for something more exciting.
 - Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author picked Holodesk from a list of suggestions.
+- Holodesk had to go: holodesk.com is a whole company. The author wants a name nobody has used before, and will choose from Claude's recommendations.
 
 ## Name
 
-**Holodesk** (folder `holodesk`), chosen by the author on 22 November 2026: the desktop as a holographic display of the week.
+**Not decided.** The folder is `holodesk` for now. Holodesk was chosen and then dropped on 22 November 2026, because holodesk.com is a company.
 
 How it got there, all on 22 November 2026:
 
 1. Claude named the folder `calendar-wallpaper`. The author: it "sounds so basic".
 2. Claude renamed it Weekscape. The author: not exciting enough; "something modern, something futuristic".
 3. Claude offered Precog, T-Minus, Holodesk, Strata, Kairo, Underglow, Sidereal and Timecast, with Precog as its own pick. The author chose Holodesk.
+4. The author found that holodesk.com is a company, and asked for names nobody has used before. Since the project now holds more than a calendar, the name should be about the background, not about time.
 
 Others using the name (searched 22 November 2026; trademarks not checked):
 
@@ -31,6 +35,21 @@ Others using the name (searched 22 November 2026; trademarks not checked):
 - HoloDesk by Plansysteme, on Microsoft's marketplace: a 3D collaboration service. This matters if Holodesk is ever listed in the Microsoft Store.
 - HoloDesk, a Microsoft Research demo from about 2011–12 (a Kinect and a see-through display).
 - No GitHub repository named holodesk was found.
+- holodesk.com, a company (found by the author).
+
+New candidates, checked by Claude on 22 November 2026. "Clean" means: the exact word got no web search results, no GitHub repository has that exact name, and the .com is not registered (checked with the .com registry's RDAP service at rdap.verisign.com). Trademarks were not checked, and anyone can register a domain at any time.
+
+- **Backlith** (clean): back + lith, as in monolith. The monolith behind your windows. Claude's pick.
+- **Voidpane** (clean): puts the empty desktop, the void, to work. GitHub has only Voidpanel repositories.
+- **Nyxpane** (clean): Nyx, the Greek goddess of night. GitHub has only nyxpanel repositories.
+- **Synapane** (clean): synapse + pane. Tools wired together on one surface.
+- **Aetherpane** (.com free, no web results): one small GitHub repository uses the name, lihytaihe-lang/aetherpane, a design skill for AI coding agents with 3 stars (April 2026).
+
+Checked and dropped:
+
+- Halopane: .com free, but KoksalBerkay/Halopane is a spatial browser for XR glasses, made on 17 November 2026. Too close in spirit.
+- Clean but about time, which fits less now: Zeitlume, Tesserday. Also with a free .com: Zeitglass, Zeitglow, Zeitgrid, Zeitpane, Weeklume, Tessaweek, Glimweek, Dayglaze, Weekglaze, Chronopane (Chronopane has 4 GitHub repositories), Subpane (too close to the common word subpanel), Kyropane, Xyrapane.
+- .com already registered: Sublume, Underlume, Kronode, Horaline, Chronoveil, Lumaweek, Infrapane, Infradesk, Infralume, Desklume, Glowpane, Backlume, Underpane, Lumadeck, Nexpane, Wallsense, Deskglow, Hyperpane, Neopane, Corewall, Basedeck, Paneon, Deskeon, Opalith, Lumivane, Plexdesk, Deskvane, Prismdesk, Novapane, Holvane, Pannox, Oriva, Lyrex, Nexwall, Lumiwall, Wallion, Undrift, Weekpane, Lumapane, Holopane, Kairolume, Tempolume, Chronolume, Stratalume, Hyperweek, Timeglaze, Foreglow, Orrerium, Vantlume, Aftergrid, Undergrid, Deskaura.
 
 ## What already exists (searched 22 November 2026)
 

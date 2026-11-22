@@ -1,6 +1,6 @@
 # Holodesk
 
-A Windows desktop background that shows the coming week from all of the author's calendars and how busy each day will be. See `README.md` for how it is meant to work.
+A Windows desktop background that holds useful tools. The first one shows the coming week from all of the author's calendars and how busy each day will be. The name is not final. See `README.md` for how it is meant to work.
 
 ## Read first
 
