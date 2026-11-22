@@ -19,3 +19,7 @@ Nothing is built yet. The repository holds the research and the decisions so far
 ## Secrets
 
 Calendar links (secret ICS addresses) and login tokens give full read access to a calendar. They live in a local config file that git ignores, never in the repository or in the wallpaper page.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

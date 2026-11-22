@@ -18,6 +18,7 @@ The scope grew the same day. In the author's words: "not just a calendar tool, b
 - Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author picked Holodesk from a list of suggestions.
 - Holodesk had to go: holodesk.com is a whole company. The author wants a name nobody has used before, and will choose from Claude's recommendations.
 - Chose Backlith.
+- Asked for it to be pushed as a public GitHub repository under the MIT licence.
 
 ## Name
 
@@ -52,6 +53,12 @@ Checked and dropped:
 - Halopane: .com free, but KoksalBerkay/Halopane is a spatial browser for XR glasses, made on 17 November 2026. Too close in spirit.
 - Clean but about time, which fits less now: Zeitlume, Tesserday. Also with a free .com: Zeitglass, Zeitglow, Zeitgrid, Zeitpane, Weeklume, Tessaweek, Glimweek, Dayglaze, Weekglaze, Chronopane (Chronopane has 4 GitHub repositories), Subpane (too close to the common word subpanel), Kyropane, Xyrapane.
 - .com already registered: Sublume, Underlume, Kronode, Horaline, Chronoveil, Lumaweek, Infrapane, Infradesk, Infralume, Desklume, Glowpane, Backlume, Underpane, Lumadeck, Nexpane, Wallsense, Deskglow, Hyperpane, Neopane, Corewall, Basedeck, Paneon, Deskeon, Opalith, Lumivane, Plexdesk, Deskvane, Prismdesk, Novapane, Holvane, Pannox, Oriva, Lyrex, Nexwall, Lumiwall, Wallion, Undrift, Weekpane, Lumapane, Holopane, Kairolume, Tempolume, Chronolume, Stratalume, Hyperweek, Timeglaze, Foreglow, Orrerium, Vantlume, Aftergrid, Undergrid, Deskaura.
+
+## Repository and licence
+
+- Public at https://github.com/xitij27/backlith since 22 November 2026, at the author's request. `main` is the only branch.
+- MIT licence, copyright Kshitij Parashar, written the same way as in the author's `jarvis` project.
+- Lively Wallpaper is GPL-3.0. Backlith only points Lively at a page and contains none of its code, so MIT is fine. Copying Lively's code into Backlith, for example its trick for placing a window behind the desktop icons in a future tray app, would bring GPL-3.0 with it. Write that part from scratch, or use a permissively licensed source.
 
 ## What already exists (searched 22 November 2026)
 
