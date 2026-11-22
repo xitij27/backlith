@@ -79,6 +79,8 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 
 ## Decisions
 
+Decisions 2 to 5 below were replaced on 22 November 2026 by the v1 design in `docs/superpowers/specs/2026-11-22-backlith-v1-design.md`. Backlith is now one Tauri app that draws the wallpaper as a picture. Lively, Task Scheduler and `data.js` are no longer part of the plan. They are kept here for the reasoning.
+
 1. **Background, not widgets.** One full-screen layout: nothing to place, one theme, one refresh. A static image cannot be clicked, and being hidden under windows is the same for widgets anyway.
 2. **Windows first, with Lively as the host.** Lively is a tray app that starts with Windows. It draws the page with its own engine, in a window behind the desktop icons, so there is no tab or window anyone can close by accident. It pauses the wallpaper while a window is maximised or full screen. It can pass clicks on the bare desktop to the page, and a `LivelyProperties.json` file gives a settings panel.
 3. **No server.** A script runs every 10 minutes from Task Scheduler, fetches the calendars, writes `data.js` beside the page and exits. The page loads `data.js` with a `<script>` tag, reloads itself every 10 minutes, and moves the "now" line with its own clock in between.
@@ -98,6 +100,7 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 - The author has very few desktop icons, but Backlith must work for people with many: they should be able to plan and organise their icons so the calendar stays usable.
 - The calendar should be elaborate, with each day as a column.
 - All three calendar mockups should be offered to users as styles to choose from.
+- Asked about performance: "I would want something which works efficiently in the background without taking too many resources." After hearing that a live web wallpaper keeps about 100–150 MB in use, chose option 1 in picture mode: one Tauri app, a small tray part, the wallpaper redrawn as an image.
 - The calendar settings and calendar links for v1 "look fine".
 - People should be able to upload their own schedules in a set format, added to the calendar. The format is Claude's to decide. The case the author gave: take a university timetable, have an LLM convert it into Backlith's format, upload it, and see it in the calendar.
 
@@ -121,7 +124,7 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 - "Sign in with Google" and "Sign in with Microsoft" come after v1. Google reviews any public app that reads calendars, and until it passes only 100 people can use it, behind a warning screen. Work Microsoft accounts often need IT approval.
 - In the planner, the calendar block's settings: style, which calendars and their colours, show the weekend, length of a full day.
 
-### Uploaded schedules (Claude's proposal, waiting for the author)
+### Uploaded schedules (Claude's proposal; the author: "cool")
 
 - Each uploaded file becomes its own calendar, with its own colour and on/off box.
 - Backlith accepts its own JSON format and `.ics` files.
