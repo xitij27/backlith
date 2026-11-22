@@ -1,0 +1,4 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# ts-rs writes the TypeScript types shared with the interface here.
+[env]
+TS_RS_EXPORT_DIR = { value = "app/src/generated", relative = true }

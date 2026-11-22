@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Rust tests
+        run: cargo test --workspace --locked
