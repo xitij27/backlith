@@ -1,10 +1,8 @@
-# Holodesk
+# Backlith
 
-Your desktop as a live display of the week ahead.
+The monolith behind your windows.
 
 A desktop background that does useful work. It holds tools, laid out by the app as one background, not as a set of widgets, so nothing has to be placed by hand. The first tool shows the coming week from all of your calendars, and how busy each day is going to be.
-
-The name is not final: see [docs/decisions.md](docs/decisions.md).
 
 Windows comes first. Ubuntu may follow.
 

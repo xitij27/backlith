@@ -17,10 +17,11 @@ The scope grew the same day. In the author's words: "not just a calendar tool, b
 - "Calendar wallpaper" as a name "sounds so basic"; the author asked for something more exciting.
 - Weekscape was not exciting enough either: "Come up with something modern, something futuristic." The author picked Holodesk from a list of suggestions.
 - Holodesk had to go: holodesk.com is a whole company. The author wants a name nobody has used before, and will choose from Claude's recommendations.
+- Chose Backlith.
 
 ## Name
 
-**Not decided.** The folder is `holodesk` for now. Holodesk was chosen and then dropped on 22 November 2026, because holodesk.com is a company.
+**Backlith** (folder `backlith`), chosen by the author on 22 November 2026: back + lith, as in monolith. The monolith behind your windows. Holodesk was chosen before it and dropped the same day, because holodesk.com is a company.
 
 How it got there, all on 22 November 2026:
 
@@ -28,8 +29,9 @@ How it got there, all on 22 November 2026:
 2. Claude renamed it Weekscape. The author: not exciting enough; "something modern, something futuristic".
 3. Claude offered Precog, T-Minus, Holodesk, Strata, Kairo, Underglow, Sidereal and Timecast, with Precog as its own pick. The author chose Holodesk.
 4. The author found that holodesk.com is a company, and asked for names nobody has used before. Since the project now holds more than a calendar, the name should be about the background, not about time.
+5. Claude offered Backlith, Voidpane, Nyxpane, Synapane and Aetherpane, with Backlith as its pick. The author said "I like backlit more". Asked whether that meant the plain word Backlit (backlit.com is registered, and more than 100 GitHub repositories use it) or Backlith, the author chose Backlith.
 
-Others using the name (searched 22 November 2026; trademarks not checked):
+Others using Holodesk (searched 22 November 2026; trademarks not checked):
 
 - HoloDesk by Nanjing DSeeLab, on Apple's App Store: a utility for holographic 3D display screens.
 - HoloDesk by Plansysteme, on Microsoft's marketplace: a 3D collaboration service. This matters if Holodesk is ever listed in the Microsoft Store.
@@ -39,7 +41,7 @@ Others using the name (searched 22 November 2026; trademarks not checked):
 
 New candidates, checked by Claude on 22 November 2026. "Clean" means: the exact word got no web search results, no GitHub repository has that exact name, and the .com is not registered (checked with the .com registry's RDAP service at rdap.verisign.com). Trademarks were not checked, and anyone can register a domain at any time.
 
-- **Backlith** (clean): back + lith, as in monolith. The monolith behind your windows. Claude's pick.
+- **Backlith** (clean): back + lith, as in monolith. The monolith behind your windows. Claude's pick, and the author's choice.
 - **Voidpane** (clean): puts the empty desktop, the void, to work. GitHub has only Voidpanel repositories.
 - **Nyxpane** (clean): Nyx, the Greek goddess of night. GitHub has only nyxpanel repositories.
 - **Synapane** (clean): synapse + pane. Tools wired together on one surface.
