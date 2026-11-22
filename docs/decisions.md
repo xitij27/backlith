@@ -89,6 +89,40 @@ Conclusion: no maintained open-source tool merges all calendars onto the wallpap
 4. **PNG fallback.** On each run the script also draws the page to a PNG and sets it as the normal Windows wallpaper. If Lively quits or crashes, the desktop still shows a recent week. Use PNG, because Windows recompresses JPEG wallpapers. Windows Spotlight and slideshow must be off, or they replace the image.
 5. **Own tray app later, maybe.** A small Tauri app (same WebView2 engine) could replace Lively and the scheduled task with one install. The trick for placing a window behind the desktop icons is not documented by Microsoft, and Windows updates can break it. Lively already deals with that, so it comes first.
 
+## v1 design talk (22 November 2026, in progress)
+
+### What the author said
+
+- The first feature is a native desktop app for planning the background: which tools it holds and where they sit. The calendar is the first tool.
+- Tools must not be covered by desktop icons.
+- The author has very few desktop icons, but Backlith must work for people with many: they should be able to plan and organise their icons so the calendar stays usable.
+- The calendar should be elaborate, with each day as a column.
+- All three calendar mockups should be offered to users as styles to choose from.
+
+### Found out
+
+- Nothing drawn as the wallpaper can sit above the desktop icons. That holds for Lively and every other wallpaper app, so tools and icons have to be kept apart.
+- Windows lets an app read and set desktop icon positions, through the desktop's shell view (`IFolderView::GetItemPosition` and `IFolderView::SelectAndPositionItems`). Setting them needs "Auto arrange icons" off. A new file saved to the desktop goes into Windows' next free slot.
+
+### Claude's proposals, which the author accepted ("that could work")
+
+- The planner shows the screen at small scale, with the real icons where they sit.
+- Each tool is a block you place and resize.
+- Icon zones: you draw one or more areas for icons (for example "Shortcuts" and "Downloads"), and Backlith moves the icons into them. Tools and zones cannot overlap. A zone too small for its icons says how many don't fit and offers to grow.
+- Backlith paints a soft labelled panel behind each zone on the wallpaper, so icons look boxed. Prior art: Stardock Fences, which is paid and closed source.
+- Backlith stays in the tray after the planner closes, and moves new desktop icons into a zone.
+- v1 plans the main screen only.
+
+### Calendar styles
+
+Mockups are in `docs/mockups/` (files for claude.ai's Design canvas; they need its runtime to render, but the layout and the sums are readable). The author's own copy of the canvas is https://claude.ai/artifact/T2v88V5RrQdZb6Ct94aXRh, which only the author can open.
+
+- **Time grid** (`TimeGrid.dc.html`): hours down the side, events as blocks at their real times, a "now" line in today's column, a fullness bar in each day's header.
+- **Day stacks** (`DayStacks.dc.html`): one card per day, hours booked shown large, events listed in order, gaps of an hour or more shown as free time.
+- **Load skyline** (`Skyline.dc.html`): each column fills from the bottom by how busy the day is, so the week reads like a skyline; events listed above the fill.
+- Shared by all three: today highlighted, past events faded, a colour per calendar, a week summary (hours booked, busiest and lightest day), and a switch to hide the weekend. 8 hours counts as a full day: Light under 3 h, Steady 3 to 6 h, Busy 6 to 8 h, Packed 8 h or more.
+- The mockups' look (dark ground, Inter with Space Grotesk for numbers and headings, orange for work, blue for personal, red for packed) was Claude's call for the mockups, not decided.
+
 ## Calendar data
 
 - **First:** ICS links, with no login. Google's "Secret address in iCal format", Outlook's "Publish calendar", iCloud's public calendar links.

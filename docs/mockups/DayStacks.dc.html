@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Day stacks week</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#8C96A5}a:hover{color:#E6EBF2}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; position: relative; overflow: hidden; background: #0D1117; color: #E6EBF2; font-family: Inter, system-ui, sans-serif">
+
+  <div style="position: absolute; left: 24px; top: 40px; width: 232px; box-sizing: border-box; padding: 16px; border-radius: 16px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.08)">
+    <div style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8C96A5; margin-bottom: 8px">Shortcuts</div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px">
+      <sc-for list="{{icons}}" as="ic" hint-placeholder-count="8">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 4px">
+          <sc-if value="{{ic.folder}}" hint-placeholder-val="{{true}}">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A9BBD0" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          </sc-if>
+          <sc-if value="{{ic.file}}" hint-placeholder-val="{{false}}">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A9BBD0" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+          </sc-if>
+          <sc-if value="{{ic.app}}" hint-placeholder-val="{{false}}">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A9BBD0" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="4"></rect><circle cx="12" cy="12" r="3"></circle></svg>
+          </sc-if>
+          <span style="font-size: 12px; text-align: center; color: #E6EBF2">{{ic.label}}</span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 288px; top: 40px; width: 1592px; display: flex; justify-content: space-between; align-items: flex-end; gap: 32px">
+    <div style="display: flex; flex-direction: column; gap: 4px">
+      <div style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8C96A5">Week 48</div>
+      <div style="font-family: 'Space Grotesk', Inter, sans-serif; font-size: 36px; font-weight: 600; line-height: 1.1">23 – 29 November</div>
+    </div>
+    <div style="display: flex; align-items: flex-end; gap: 40px">
+      <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end">
+        <div style="font-family: 'Space Grotesk', Inter, sans-serif; font-size: 36px; font-weight: 600; line-height: 1.1">{{total}}</div>
+        <div style="font-size: 13px; color: #8C96A5">booked this week</div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #8C96A5">
+        <div>Busiest <span style="color: #FF9F8A; font-weight: 600">{{busiest}}</span></div>
+        <div>Lightest <span style="color: #E6EBF2; font-weight: 600">{{lightest}}</span></div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: #8C96A5">
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #F5B65C"></span>Work · Outlook</div>
+        <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #5A8CF0"></span>Personal · Google</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 288px; top: 136px; width: 1592px; height: 856px; display: grid; grid-template-columns: {{cols}}; gap: 12px">
+    <sc-for list="{{days}}" as="d" hint-placeholder-count="7">
+      <div style="box-sizing: border-box; padding: 18px 14px; border-radius: 16px; background: rgba(255,255,255,0.035); border: 1px solid {{d.border}}; display: flex; flex-direction: column; gap: 14px; overflow: hidden">
+        <div style="display: flex; flex-direction: column; gap: 10px; opacity: {{d.headOpacity}}">
+          <div style="display: flex; align-items: baseline; gap: 8px">
+            <span style="font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #8C96A5">{{d.name}}</span>
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-size: 26px; font-weight: 600">{{d.date}}</span>
+            <sc-if value="{{d.isToday}}" hint-placeholder-val="{{false}}">
+              <span style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #E6EBF2; color: #0D1117">Today</span>
+            </sc-if>
+          </div>
+          <div style="display: flex; align-items: baseline; gap: 10px">
+            <span style="font-family: 'Space Grotesk', Inter, sans-serif; font-size: 34px; font-weight: 600; line-height: 1; color: {{d.hoursColor}}">{{d.hours}}</span>
+            <span style="font-size: 13px; font-weight: 500; color: {{d.loadColor}}">{{d.level}}</span>
+          </div>
+          <div style="height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); overflow: hidden">
+            <div style="height: 6px; width: {{d.barWidth}}%; border-radius: 3px; background: {{d.barColor}}"></div>
+          </div>
+        </div>
+        <div style="height: 1px; background: rgba(255,255,255,0.08)"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <sc-for list="{{d.items}}" as="it" hint-placeholder-count="4">
+            <sc-if value="{{it.isEvent}}" hint-placeholder-val="{{true}}">
+              <div style="box-sizing: border-box; padding: 10px 12px; border-radius: 10px; background: {{it.bg}}; color: {{it.fg}}; opacity: {{it.opacity}}; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 12px; opacity: 0.8">{{it.range}}</span>
+                <span style="font-size: 14.5px; font-weight: 600; line-height: 1.3">{{it.title}}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{it.isFree}}" hint-placeholder-val="{{false}}">
+              <div style="box-sizing: border-box; padding: 8px 12px; border-radius: 10px; border: 1px dashed rgba(255,255,255,0.18); color: #8C96A5; opacity: {{it.opacity}}; display: flex; justify-content: space-between; gap: 8px; font-size: 12px">
+                <span style="font-weight: 600; color: #C9D2DE">{{it.length}} free</span>
+                <span>{{it.range}}</span>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 48px; background: #161B22; border-top: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center">
+    <div style="display: flex; gap: 8px">
+      <sc-for list="{{taskbar}}" as="t" hint-placeholder-count="6">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.08)"></div>
+      </sc-for>
+    </div>
+    <div style="position: absolute; right: 20px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-end; font-size: 12px; line-height: 1.35; color: #E6EBF2">
+      <span>13:40</span>
+      <span>25.11.2026</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"showWeekend":{"editor":"boolean","default":true},"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var showWeekend = this.props.showWeekend ?? true;
+    var NOW = 13 * 60 + 40;
+    var toMin = function (t) { var p = t.split(':'); return Number(p[0]) * 60 + Number(p[1]); };
+    var fmt = function (min) { var h = Math.floor(min / 60), m = min % 60; return m ? h + 'h ' + m + 'm' : h + 'h'; };
+    var level = function (min) { return min >= 480 ? 'Packed' : min >= 360 ? 'Busy' : min >= 180 ? 'Steady' : 'Light'; };
+    var CAL = {
+      work: { bg: 'rgba(245,182,92,0.16)', fg: '#F8D9A8' },
+      personal: { bg: 'rgba(90,140,240,0.24)', fg: '#D3E2FF' }
+    };
+    var RAW = [
+      { name: 'Mon', date: '23', state: 'past', ev: [['09:00', '09:30', 'Standup', 'work'], ['10:00', '12:00', 'Lecture · Machine Learning', 'work'], ['14:00', '15:00', '1:1 with supervisor', 'work'], ['18:00', '19:00', 'Gym', 'personal']] },
+      { name: 'Tue', date: '24', state: 'past', ev: [['09:00', '09:30', 'Standup', 'work'], ['11:00', '12:30', 'Design review', 'work'], ['13:00', '14:00', 'Lunch with the team', 'personal'], ['16:00', '17:30', 'Lab session', 'work']] },
+      { name: 'Wed', date: '25', state: 'today', ev: [['09:00', '09:30', 'Standup', 'work'], ['10:00', '11:30', 'Lecture · Databases', 'work'], ['12:00', '13:00', 'Lunch', 'personal'], ['13:30', '15:00', 'Project sync', 'work'], ['15:30', '17:00', 'Deep work', 'work'], ['19:00', '21:00', 'Hackathon prep', 'personal']] },
+      { name: 'Thu', date: '26', state: 'future', ev: [['09:00', '09:30', 'Standup', 'work'], ['14:00', '15:00', 'Dentist', 'personal']] },
+      { name: 'Fri', date: '27', state: 'future', ev: [['09:00', '09:30', 'Standup', 'work'], ['10:00', '12:00', 'Lecture · Machine Learning', 'work'], ['13:00', '17:00', 'Hackathon', 'personal']] },
+      { name: 'Sat', date: '28', state: 'future', ev: [['11:00', '13:00', 'Football', 'personal'], ['20:00', '22:00', 'Dinner with friends', 'personal']] },
+      { name: 'Sun', date: '29', state: 'future', ev: [['16:00', '17:00', 'Call home', 'personal']] }
+    ];
+    var shown = RAW.slice(0, showWeekend ? 7 : 5);
+    var totalMin = 0, most = null, least = null;
+    var days = shown.map(function (d) {
+      var booked = 0, items = [], prevEnd = null;
+      d.ev.forEach(function (x) {
+        var a = toMin(x[0]), b = toMin(x[1]);
+        if (prevEnd !== null && a - prevEnd >= 60) {
+          var fs = Math.floor(prevEnd / 60), fm = prevEnd % 60;
+          var from = (fs < 10 ? '0' : '') + fs + ':' + (fm < 10 ? '0' : '') + fm;
+          items.push({
+            isFree: true, isEvent: false, length: fmt(a - prevEnd), range: from + ' – ' + x[0],
+            opacity: d.state === 'past' || (d.state === 'today' && a <= NOW) ? 0.45 : 1
+          });
+        }
+        booked += b - a;
+        prevEnd = b;
+        var done = d.state === 'past' || (d.state === 'today' && b <= NOW);
+        items.push({
+          isEvent: true, isFree: false, title: x[2], range: x[0] + ' – ' + x[1],
+          bg: CAL[x[3]].bg, fg: CAL[x[3]].fg, opacity: done ? 0.45 : 1
+        });
+      });
+      totalMin += booked;
+      if (!most || booked > most.min) most = { name: d.name, min: booked };
+      if (!least || booked < least.min) least = { name: d.name, min: booked };
+      var lvl = level(booked);
+      var packed = lvl === 'Packed';
+      return {
+        name: d.name, date: d.date, items: items,
+        isToday: d.state === 'today',
+        border: d.state === 'today' ? 'rgba(230,235,242,0.45)' : 'rgba(255,255,255,0.08)',
+        headOpacity: d.state === 'past' ? 0.55 : 1,
+        hours: fmt(booked), level: lvl,
+        hoursColor: packed ? '#FF9F8A' : '#E6EBF2',
+        loadColor: packed ? '#FF9F8A' : '#8C96A5',
+        barWidth: Math.min(100, Math.round(booked / 480 * 100)),
+        barColor: packed ? '#FF9F8A' : '#E6EBF2'
+      };
+    });
+    return {
+      icons: [
+        { label: 'Recycle Bin', app: true }, { label: 'Projects', folder: true },
+        { label: 'Downloads', folder: true }, { label: 'Notes.txt', file: true },
+        { label: 'Report.pdf', file: true }, { label: 'Photos', folder: true },
+        { label: 'Terminal', app: true }, { label: 'Music', app: true }
+      ],
+      days: days,
+      cols: 'repeat(' + days.length + ', minmax(0, 1fr))',
+      total: fmt(totalMin),
+      busiest: most.name + ' · ' + fmt(most.min),
+      lightest: least.name + ' · ' + fmt(least.min),
+      taskbar: [{ k: 1 }, { k: 2 }, { k: 3 }, { k: 4 }, { k: 5 }, { k: 6 }]
+    };
+  }
+}
+</script>
+</body>
+</html>
