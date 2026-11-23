@@ -8,7 +8,7 @@
 
 use std::collections::HashMap;
 
-use chrono::{DateTime, Duration, LocalResult, NaiveDate, NaiveDateTime, NaiveTime, TimeZone, Utc};
+use chrono::{DateTime, Datelike, Duration, LocalResult, NaiveDate, NaiveDateTime, NaiveTime, Offset, TimeZone, Utc, Weekday};
 use chrono_tz::Tz;
 use icalendar::parser::{read_calendar, unfold, Component, Property};
 
@@ -123,21 +123,178 @@ fn param(p: &Property<'_>, key: &str) -> Option<String> {
         .map(|v| v.as_str().trim().trim_matches('"').to_string())
 }
 
-/// A `TZID` as an IANA zone: an IANA name, a Windows name, or a path that
-/// ends in an IANA name (`/mozilla.org/20050126_1/Europe/Berlin`).
-fn zone_named(name: &str, viewer: Tz) -> Tz {
-    if let Ok(tz) = name.parse::<Tz>() {
-        return tz;
-    }
-    if let Some(tz) = windows_zone_to_iana(name) {
-        return tz;
-    }
-    name.match_indices('/')
-        .find_map(|(i, _)| name[i + 1..].parse::<Tz>().ok())
-        .unwrap_or(viewer)
+/// The zones a calendar file can name: the viewer's, and those its own
+/// `VTIMEZONE` blocks define under names no table knows.
+struct Zones {
+    viewer: Tz,
+    custom: HashMap<String, Tz>,
 }
 
-fn parse_stamp(value: &str, tzid: Option<&str>, date_only: bool, viewer: Tz) -> Option<Stamp> {
+/// A zone name every table knows: IANA, Windows, or Microsoft's
+/// `tzone://Microsoft/…` form.
+fn known_zone(name: &str) -> Option<Tz> {
+    if let Ok(tz) = name.parse::<Tz>() {
+        return Some(tz);
+    }
+    if let Some(tz) = windows_zone_to_iana(name) {
+        return Some(tz);
+    }
+    let rest = name.strip_prefix("tzone://Microsoft/")?;
+    if rest.eq_ignore_ascii_case("utc") {
+        return Some(chrono_tz::UTC);
+    }
+    windows_zone_to_iana(rest).or_else(|| rest.parse().ok())
+}
+
+/// A `TZID` as an IANA zone: a known name, one the file's own `VTIMEZONE`
+/// defines, or a path ending in an IANA name
+/// (`/mozilla.org/20050126_1/Europe/Berlin`). Otherwise the viewer's zone.
+fn zone_named(name: &str, zones: &Zones) -> Tz {
+    known_zone(name)
+        .or_else(|| zones.custom.get(name).copied())
+        .or_else(|| name.match_indices('/').find_map(|(i, _)| name[i + 1..].parse::<Tz>().ok()))
+        .unwrap_or(zones.viewer)
+}
+
+/// `+0100`, `-0500`, `+053000` as seconds east of UTC.
+fn parse_offset(text: &str) -> Option<i32> {
+    let t = text.trim();
+    let (sign, digits) = match t.as_bytes().first()? {
+        b'+' => (1, &t[1..]),
+        b'-' => (-1, &t[1..]),
+        _ => return None,
+    };
+    if !(digits.len() == 4 || digits.len() == 6) || !digits.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    let n = |r: std::ops::Range<usize>| digits[r].parse::<i32>().ok();
+    let secs = n(0..2)? * 3600 + n(2..4)? * 60 + if digits.len() == 6 { n(4..6)? } else { 0 };
+    Some(sign * secs)
+}
+
+/// One `STANDARD` or `DAYLIGHT` part of a `VTIMEZONE`.
+struct Observance {
+    daylight: bool,
+    offset: i32,
+    /// From its yearly RRULE: the month, and which weekday of it (`2SU`, `-1SU`).
+    rule: Option<(u32, i32, Weekday)>,
+}
+
+fn weekday_code(code: &str) -> Option<Weekday> {
+    Some(match code {
+        "MO" => Weekday::Mon,
+        "TU" => Weekday::Tue,
+        "WE" => Weekday::Wed,
+        "TH" => Weekday::Thu,
+        "FR" => Weekday::Fri,
+        "SA" => Weekday::Sat,
+        "SU" => Weekday::Sun,
+        _ => return None,
+    })
+}
+
+fn yearly_rule(rrule: &str) -> Option<(u32, i32, Weekday)> {
+    let mut month = None;
+    let mut byday = None;
+    for part in rrule.split(';') {
+        let (k, v) = part.split_once('=')?;
+        match k.to_ascii_uppercase().as_str() {
+            "BYMONTH" => month = v.parse::<u32>().ok(),
+            "BYDAY" => {
+                let v = v.trim().to_ascii_uppercase();
+                let (num, code) = v.split_at(v.len().saturating_sub(2));
+                let n = if num.is_empty() { 1 } else { num.parse::<i32>().ok()? };
+                byday = Some((n, weekday_code(code)?));
+            }
+            _ => {}
+        }
+    }
+    let (n, wd) = byday?;
+    Some((month?, n, wd))
+}
+
+/// The `n`th `wd` of a month; negative `n` counts from the end.
+fn nth_weekday(year: i32, month: u32, n: i32, wd: Weekday) -> Option<NaiveDate> {
+    if n > 0 {
+        return NaiveDate::from_weekday_of_month_opt(year, month, wd, u8::try_from(n).ok()?);
+    }
+    let next = if month == 12 { NaiveDate::from_ymd_opt(year + 1, 1, 1)? } else { NaiveDate::from_ymd_opt(year, month + 1, 1)? };
+    let mut d = next.pred_opt()?;
+    while d.weekday() != wd {
+        d = d.pred_opt()?;
+    }
+    Some(d - Duration::weeks(i64::from(-n - 1)))
+}
+
+/// The UTC offset on the 15th of each month of `year`, as the observances define it.
+fn monthly_offsets(obs: &[Observance], year: i32) -> Option<[i32; 12]> {
+    let standard = obs.iter().find(|o| !o.daylight);
+    let daylight = obs.iter().find(|o| o.daylight);
+    let mut out = [0; 12];
+    for (i, slot) in out.iter_mut().enumerate() {
+        let mid = NaiveDate::from_ymd_opt(year, i as u32 + 1, 15)?;
+        *slot = match (standard, daylight) {
+            (Some(s), Some(d)) => match (s.rule, d.rule) {
+                (Some((sm, sn, sw)), Some((dm, dn, dw))) => {
+                    let ends = nth_weekday(year, sm, sn, sw)?;
+                    let starts = nth_weekday(year, dm, dn, dw)?;
+                    let summer = if starts < ends { starts <= mid && mid < ends } else { !(ends <= mid && mid < starts) };
+                    if summer { d.offset } else { s.offset }
+                }
+                _ => s.offset,
+            },
+            (Some(o), None) | (None, Some(o)) => o.offset,
+            (None, None) => return None,
+        };
+    }
+    Some(out)
+}
+
+/// Zones tried first when matching a `VTIMEZONE` by its offsets, so a
+/// common zone wins over an obscure one with the same clock.
+const PREFERRED_ZONES: [&str; 20] = [
+    "America/New_York", "America/Chicago", "America/Denver", "America/Phoenix", "America/Los_Angeles",
+    "America/Anchorage", "Pacific/Honolulu", "America/Sao_Paulo", "Europe/London", "Europe/Berlin",
+    "Europe/Paris", "Europe/Athens", "Europe/Moscow", "Asia/Dubai", "Asia/Kolkata",
+    "Asia/Shanghai", "Asia/Tokyo", "Australia/Sydney", "Pacific/Auckland", "UTC",
+];
+
+/// An IANA zone whose clock matches a `VTIMEZONE` block on the 15th of
+/// every month of a recent year. Outlook names zones like this
+/// "Customized Time Zone".
+fn match_vtimezone(c: &Component<'_>) -> Option<Tz> {
+    let obs: Vec<Observance> = c
+        .components
+        .iter()
+        .filter_map(|o| {
+            let daylight = match o.name.as_str().to_ascii_uppercase().as_str() {
+                "DAYLIGHT" => true,
+                "STANDARD" => false,
+                _ => return None,
+            };
+            let get = |key: &str| o.properties.iter().find(|p| p.name.as_str().eq_ignore_ascii_case(key)).map(|p| p.val.as_str().to_string());
+            Some(Observance { daylight, offset: parse_offset(&get("TZOFFSETTO")?)?, rule: get("RRULE").as_deref().and_then(yearly_rule) })
+        })
+        .collect();
+    let year = 2026;
+    let wanted = monthly_offsets(&obs, year)?;
+    let table = crate::zones_windows::all_iana();
+    let fixed = (-14..=12).map(|h: i32| if h == 0 { "Etc/GMT".to_string() } else { format!("Etc/GMT{}{}", if h > 0 { "+" } else { "-" }, h.abs()) });
+    PREFERRED_ZONES
+        .iter()
+        .map(|z| z.to_string())
+        .chain(table.into_iter().map(String::from))
+        .chain(fixed)
+        .filter_map(|name| name.parse::<Tz>().ok())
+        .find(|tz| {
+            (1..=12).all(|m| {
+                let noon = NaiveDate::from_ymd_opt(year, m, 15).and_then(|d| d.and_hms_opt(12, 0, 0));
+                noon.is_some_and(|n| resolve(*tz, n).offset().fix().local_minus_utc() == wanted[m as usize - 1])
+            })
+        })
+}
+
+fn parse_stamp(value: &str, tzid: Option<&str>, date_only: bool, zones: &Zones) -> Option<Stamp> {
     let v = value.trim();
     if date_only || (v.len() == 8 && v.bytes().all(|b| b.is_ascii_digit())) {
         return NaiveDate::parse_from_str(v, "%Y%m%d").ok().map(Stamp::Date);
@@ -147,18 +304,26 @@ fn parse_stamp(value: &str, tzid: Option<&str>, date_only: bool, viewer: Tz) -> 
     }
     let n = NaiveDateTime::parse_from_str(v, "%Y%m%dT%H%M%S").ok()?;
     Some(match tzid {
-        Some(t) => Stamp::Zoned(n, zone_named(t, viewer)),
+        Some(t) => Stamp::Zoned(n, zone_named(t, zones)),
         None => Stamp::Floating(n),
     })
 }
 
-fn stamps(p: &Property<'_>, viewer: Tz) -> Vec<Stamp> {
+fn stamps(p: &Property<'_>, zones: &Zones) -> Vec<Stamp> {
     let tzid = param(p, "TZID");
     let date_only = param(p, "VALUE").is_some_and(|v| v.eq_ignore_ascii_case("DATE"));
     p.val
         .as_str()
         .split(',')
-        .filter_map(|v| parse_stamp(v, tzid.as_deref(), date_only, viewer))
+        .filter_map(|v| {
+            parse_stamp(v, tzid.as_deref(), date_only, zones).or_else(|| {
+                // An unquoted TZID holding a colon (`TZID=tzone://Microsoft/Utc:2026…`)
+                // is cut at the colon by the parser: put the name back together.
+                let tz = tzid.as_deref()?;
+                let (rest_of_name, time) = v.rsplit_once(':')?;
+                parse_stamp(time, Some(&format!("{tz}:{rest_of_name}")), date_only, zones)
+            })
+        })
         .collect()
 }
 
@@ -214,7 +379,7 @@ fn parse_duration(text: &str) -> Option<Duration> {
     Some(if negative { -total } else { total })
 }
 
-fn read_event(c: &Component<'_>, index: usize, viewer: Tz) -> Option<RawEvent> {
+fn read_event(c: &Component<'_>, index: usize, zones: &Zones) -> Option<RawEvent> {
     let mut ev = RawEvent {
         uid: format!("backlith-no-uid-{index}"),
         title: String::new(),
@@ -239,17 +404,17 @@ fn read_event(c: &Component<'_>, index: usize, viewer: Tz) -> Option<RawEvent> {
             "STATUS" => ev.cancelled = value.trim().eq_ignore_ascii_case("CANCELLED"),
             "TRANSP" => ev.transparent = value.trim().eq_ignore_ascii_case("TRANSPARENT"),
             "DTSTART" => {
-                if let Some(s) = stamps(p, viewer).into_iter().next() {
+                if let Some(s) = stamps(p, zones).into_iter().next() {
                     ev.start = s;
                     has_start = true;
                 }
             }
-            "DTEND" => ev.end = stamps(p, viewer).into_iter().next(),
+            "DTEND" => ev.end = stamps(p, zones).into_iter().next(),
             "DURATION" => ev.duration = parse_duration(value),
             "RRULE" => ev.rrule = Some(value.trim().to_string()),
-            "EXDATE" => ev.exdates.extend(stamps(p, viewer)),
-            "RDATE" => ev.rdates.extend(stamps(p, viewer)),
-            "RECURRENCE-ID" => ev.recurrence_id = stamps(p, viewer).into_iter().next(),
+            "EXDATE" => ev.exdates.extend(stamps(p, zones)),
+            "RDATE" => ev.rdates.extend(stamps(p, zones)),
+            "RECURRENCE-ID" => ev.recurrence_id = stamps(p, zones).into_iter().next(),
             _ => {}
         }
     }
@@ -286,7 +451,8 @@ fn normalize_until(rule: &str, start: Stamp) -> String {
             if !key.eq_ignore_ascii_case("UNTIL") {
                 return part.to_string();
             }
-            let local = match parse_stamp(value, None, false, chrono_tz::UTC) {
+            let utc_only = Zones { viewer: chrono_tz::UTC, custom: HashMap::new() };
+            let local = match parse_stamp(value, None, false, &utc_only) {
                 Some(Stamp::Utc(n)) => return format!("UNTIL={}Z", n.format("%Y%m%dT%H%M%S")),
                 Some(Stamp::Date(d)) => d.and_hms_opt(23, 59, 59).expect("a valid time"),
                 Some(Stamp::Floating(n) | Stamp::Zoned(n, _)) => n,
@@ -346,6 +512,7 @@ fn excluded(instance: Stamp, exdates: &[Stamp]) -> bool {
 
 /// Every occurrence that overlaps `range`, in `viewer_tz` wall-clock time.
 pub fn read_ics(text: &str, calendar_id: &str, viewer_tz: Tz, range: &DateRange) -> Result<Vec<Occurrence>, IcsError> {
+    let text = text.trim_start_matches('\u{feff}');
     if !text.to_ascii_uppercase().contains("BEGIN:VCALENDAR") {
         return Err(IcsError::NotCalendar);
     }
@@ -353,12 +520,24 @@ pub fn read_ics(text: &str, calendar_id: &str, viewer_tz: Tz, range: &DateRange)
     let calendar =
         read_calendar(&unfolded).map_err(|e| IcsError::Parse(e.lines().next().unwrap_or_default().to_string()))?;
 
+    // Zones the file defines itself, under names no table knows.
+    let mut zones = Zones { viewer: viewer_tz, custom: HashMap::new() };
+    for c in calendar.components.iter().filter(|c| c.name.as_str().eq_ignore_ascii_case("VTIMEZONE")) {
+        let Some(id) = c.properties.iter().find(|p| p.name.as_str().eq_ignore_ascii_case("TZID")) else { continue };
+        let id = id.val.as_str().trim().trim_matches('"').to_string();
+        if known_zone(&id).is_none() {
+            if let Some(tz) = match_vtimezone(c) {
+                zones.custom.insert(id, tz);
+            }
+        }
+    }
+
     let events: Vec<RawEvent> = calendar
         .components
         .iter()
         .filter(|c| c.name.as_str().eq_ignore_ascii_case("VEVENT"))
         .enumerate()
-        .filter_map(|(i, c)| read_event(c, i, viewer_tz))
+        .filter_map(|(i, c)| read_event(c, i, &zones))
         .collect();
 
     // The instances that overrides replace, per UID.
@@ -447,7 +626,20 @@ mod tests {
 
     #[test]
     fn zone_paths_and_unknown_names() {
-        assert_eq!(zone_named("/mozilla.org/20050126_1/Europe/Berlin", chrono_tz::UTC), chrono_tz::Europe::Berlin);
-        assert_eq!(zone_named("Nowhere Standard Time", chrono_tz::Europe::London), chrono_tz::Europe::London);
+        let utc = Zones { viewer: chrono_tz::UTC, custom: HashMap::new() };
+        let london = Zones { viewer: chrono_tz::Europe::London, custom: HashMap::new() };
+        assert_eq!(zone_named("/mozilla.org/20050126_1/Europe/Berlin", &utc), chrono_tz::Europe::Berlin);
+        assert_eq!(zone_named("Nowhere Standard Time", &london), chrono_tz::Europe::London);
+        assert_eq!(zone_named("tzone://Microsoft/Utc", &london), chrono_tz::UTC);
+    }
+
+    #[test]
+    fn offsets_and_weekday_rules() {
+        assert_eq!(parse_offset("-0500"), Some(-5 * 3600));
+        assert_eq!(parse_offset("+0530"), Some(5 * 3600 + 30 * 60));
+        assert_eq!(parse_offset("0100"), None);
+        assert_eq!(yearly_rule("FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10"), Some((10, -1, Weekday::Sun)));
+        assert_eq!(nth_weekday(2026, 3, 2, Weekday::Sun), NaiveDate::from_ymd_opt(2026, 3, 8));
+        assert_eq!(nth_weekday(2026, 10, -1, Weekday::Sun), NaiveDate::from_ymd_opt(2026, 10, 25));
     }
 }

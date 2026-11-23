@@ -18,3 +18,9 @@ fn table() -> &'static HashMap<&'static str, &'static str> {
 pub fn windows_zone_to_iana(name: &str) -> Option<Tz> {
     table().get(name.trim()).and_then(|iana| iana.parse().ok())
 }
+
+/// Every IANA zone the table maps to, in table order.
+pub(crate) fn all_iana() -> Vec<&'static str> {
+    let mut seen = std::collections::HashSet::new();
+    TABLE.lines().skip(1).filter_map(|l| l.split_once(',')).map(|(_, iana)| iana).filter(|z| seen.insert(*z)).collect()
+}

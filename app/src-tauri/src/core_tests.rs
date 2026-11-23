@@ -242,6 +242,7 @@ async fn sources_report_since_when() {
 fn tick_redraws_when_dirty_then_waits() {
     let e = env();
     let now = at("2026-11-25T13:40");
+    applied(&e);
     assert!(e.core.tick(now).is_some());
     assert!(e.core.tick(now + Duration::minutes(1)).is_none());
     e.core.mark_dirty();
@@ -264,4 +265,55 @@ fn preview_week_uses_the_given_settings_without_saving() {
     let week = e.core.preview_week(at("2026-11-25T13:40"), tool);
     assert_eq!(week.days.len(), 5);
     assert_eq!(e.core.planner_state(at("2026-11-25T13:40")).unwrap().week.days.len(), 7, "settings unchanged");
+}
+
+#[test]
+fn no_redraw_before_the_first_apply() {
+    // Until then the user's own wallpaper must stay, so the undo record keeps it.
+    let e = env();
+    assert!(e.core.tick(at("2026-11-25T13:40")).is_none());
+    applied(&e);
+    assert!(e.core.tick(at("2026-11-25T13:41")).is_some());
+}
+
+#[test]
+fn restoring_the_wallpaper_stays_paused_after_a_restart() {
+    let e = env();
+    applied(&e);
+    e.core.restore_wallpaper().unwrap();
+    let again = AppCore::new(e.desktop.clone(), e.secrets.clone(), e.dir.path().join("data")).unwrap();
+    assert!(again.planner_state(at("2026-11-25T13:40")).unwrap().settings.paused);
+    assert!(again.tick(at("2026-11-25T13:40")).is_none());
+}
+
+#[test]
+fn restore_uses_the_saved_copy_when_the_original_is_gone() {
+    let e = env();
+    applied(&e);
+    std::fs::remove_file(e.dir.path().join("old-wallpaper.jpg")).unwrap();
+    e.core.restore_wallpaper().unwrap();
+    let now_set = e.desktop.current_wallpaper().unwrap().unwrap();
+    assert!(now_set.starts_with(&e.dir.path().join("data").join("base").display().to_string()), "{now_set}");
+}
+
+#[test]
+fn a_damaged_settings_file_starts_fresh_and_is_kept_aside() {
+    let dir = tempfile::tempdir().unwrap();
+    let data = dir.path().join("data");
+    std::fs::create_dir_all(&data).unwrap();
+    std::fs::write(data.join("settings.json"), "{ \"version\": 1, \"layo").unwrap();
+    let core = AppCore::new(Arc::new(FakeDesktop::new(None)), Arc::new(MemoryStore::default()), data.clone()).unwrap();
+    assert!(core.is_first_run());
+    let kept = std::fs::read_dir(&data).unwrap().filter_map(|e| e.ok()).any(|e| e.file_name().to_string_lossy().starts_with("settings.json.damaged"));
+    assert!(kept, "the damaged file is kept for the user");
+}
+
+#[test]
+fn an_unreadable_calendar_file_says_so_plainly() {
+    let e = env();
+    let broken = "BEGIN:VCALENDAR\r\nBEGIN:VEVENT\r\nSUMMARY:x\r\n";
+    assert_eq!(
+        e.core.upload("cal.ics".into(), broken.as_bytes().to_vec(), false),
+        Err(UploadError::Invalid { errors: vec!["This calendar file could not be read.".into()] })
+    );
 }

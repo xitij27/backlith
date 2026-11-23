@@ -70,7 +70,13 @@ fn build_tray(app: &AppHandle, core: Arc<AppCore>, paused: bool) -> tauri::Resul
                     let _ = pause.set_checked(paused);
                 }
                 "icons" => report(core.put_icons_back()),
-                "wallpaper" => report(core.restore_wallpaper()),
+                "wallpaper" => match core.restore_wallpaper() {
+                    // Restoring pauses Backlith: show it in the menu.
+                    Ok(()) => {
+                        let _ = pause.set_checked(true);
+                    }
+                    Err(e) => eprintln!("Backlith: {e}"),
+                },
                 "quit" => app.exit(0),
                 _ => {}
             }

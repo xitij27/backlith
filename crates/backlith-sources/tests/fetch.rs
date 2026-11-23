@@ -133,3 +133,34 @@ async fn forget_removes_the_cache() {
     f.forget("work");
     assert_eq!((f.cached_text("work"), f.cache_meta("work")), (None, None));
 }
+
+#[tokio::test]
+async fn redirect_does_not_leak_the_link() {
+    // The link's server sends us on to another host, as a login redirect would.
+    let other = MockServer::start_async().await;
+    let leak = other
+        .mock_async(|when, then| {
+            when.method(GET).path("/landing").header_exists("referer");
+            then.status(200).body(ICS_V1);
+        })
+        .await;
+    let clean = other
+        .mock_async(|when, then| {
+            when.method(GET).path("/landing").header_missing("referer");
+            then.status(200).body(ICS_V1);
+        })
+        .await;
+    let origin = MockServer::start_async().await;
+    let target = other.url("/landing");
+    origin
+        .mock_async(move |when, then| {
+            when.method(GET).path("/secret-token-abc123/cal.ics");
+            then.status(302).header("Location", target);
+        })
+        .await;
+    let dir = tempfile::tempdir().unwrap();
+    let f = Fetcher::new(dir.path().to_path_buf());
+    assert_eq!(f.fetch("work", &origin.url("/secret-token-abc123/cal.ics"), now()).await, FetchOutcome::Updated);
+    assert_eq!(leak.calls_async().await, 0, "the other host was told the secret link");
+    assert_eq!(clean.calls_async().await, 1);
+}

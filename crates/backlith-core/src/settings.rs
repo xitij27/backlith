@@ -124,7 +124,13 @@ pub fn save_json<T: Serialize>(path: &Path, value: &T) -> Result<(), SettingsErr
     let mut tmp = path.as_os_str().to_owned();
     tmp.push(".tmp");
     let tmp = std::path::PathBuf::from(tmp);
-    std::fs::write(&tmp, text).map_err(io)?;
+    {
+        use std::io::Write;
+        let mut file = std::fs::File::create(&tmp).map_err(io)?;
+        file.write_all(text.as_bytes()).map_err(io)?;
+        // On disk before the rename, so a power cut can't leave an empty file.
+        file.sync_all().map_err(io)?;
+    }
     std::fs::rename(&tmp, path).map_err(|e| {
         let _ = std::fs::remove_file(&tmp);
         io(e)

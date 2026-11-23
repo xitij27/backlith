@@ -89,6 +89,9 @@ impl Fetcher {
     pub fn new(cache_dir: PathBuf) -> Self {
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(20))
+            // Following a redirect would otherwise send the link, which is a
+            // secret, to the next host as a Referer header.
+            .referer(false)
             .user_agent(concat!("Backlith/", env!("CARGO_PKG_VERSION")))
             .build()
             .expect("an HTTP client with these settings can always be built");

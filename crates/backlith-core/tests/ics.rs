@@ -101,3 +101,22 @@ fn html_is_not_a_calendar() {
     let page = "<!doctype html><html><head><title>Sign in</title></head><body>Sign in</body></html>";
     assert_eq!(read_ics(page, "cal", BERLIN, &range("2026-11-23", "2026-11-30")), Err(IcsError::NotCalendar));
 }
+
+#[test]
+fn a_byte_order_mark_is_ignored() {
+    let text = format!("\u{feff}{}", include_str!("fixtures/times.ics"));
+    let v = read(&text, BERLIN, range("2026-11-23", "2026-11-30"));
+    assert_eq!(titled(&v, "UTC").start, at("2026-11-24T09:00"));
+}
+
+#[test]
+fn customized_zone_uses_the_files_own_vtimezone() {
+    let v = read(include_str!("fixtures/customized_tz.ics"), BERLIN, range("2026-11-23", "2026-11-30"));
+    assert_eq!(titled(&v, "Call with New York").start, at("2026-11-24T15:00"));
+}
+
+#[test]
+fn microsoft_tzone_names() {
+    let v = read(include_str!("fixtures/tzone_utc.ics"), BERLIN, range("2026-11-23", "2026-11-30"));
+    assert_eq!(titled(&v, "Exchange UTC").start, at("2026-11-24T10:00"));
+}

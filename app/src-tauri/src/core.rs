@@ -14,7 +14,7 @@ use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 use backlith_core::{
     build_week, check_schedule, decide_redraw, expand_schedule, first_run_layout, llm_prompt, load_json, plan_icons, read_ics,
     save_json, secret_key, validate_layout, week_dates, CalendarSource, CalendarToolSettings, DateRange, DesktopIcon, IcsError,
-    IconGrid, ItemKind, Layout, Occurrence, RectPx, RedrawDecision, RedrawState, RenderInput, Settings, SourceKind, UndoRecord,
+    IconGrid, ItemKind, Layout, Occurrence, RectPx, RedrawDecision, RedrawState, RenderInput, Settings, SettingsError, SourceKind, UndoRecord,
     WeekView, ZoneOverflow, SETTINGS_VERSION,
 };
 use backlith_sources::{normalize_link, FetchOutcome, Fetcher, SecretStore, MAX_CALENDAR_BYTES};
@@ -119,7 +119,18 @@ fn upcoming(today: NaiveDate) -> DateRange {
 
 impl AppCore {
     pub fn new(desktop: Arc<dyn Desktop>, secrets: Arc<dyn SecretStore>, data_dir: PathBuf) -> anyhow::Result<Self> {
-        let saved: Option<Settings> = load_json(&data_dir.join("settings.json"))?;
+        let path = data_dir.join("settings.json");
+        let saved: Option<Settings> = match load_json(&path) {
+            Ok(s) => s,
+            // A damaged file must not stop Backlith starting. Keep it aside
+            // for the user and start as on a first run.
+            Err(SettingsError::Corrupt(_)) => {
+                let aside = data_dir.join(format!("settings.json.damaged-{}", chrono::Local::now().format("%Y%m%d-%H%M%S")));
+                let _ = std::fs::rename(&path, &aside);
+                None
+            }
+            Err(e) => return Err(e.into()),
+        };
         let (settings, first_run) = match saved {
             Some(s) => (s, false),
             None => {
@@ -295,10 +306,22 @@ impl AppCore {
 
     pub fn restore_wallpaper(&self) -> Result<(), String> {
         let record = self.undo_record()?;
-        let path = record.wallpaper.ok_or_else(|| "Backlith has no record of your old wallpaper.".to_string())?;
-        self.desktop.set_wallpaper(Path::new(&path)).map_err(|e| e.to_string())?;
-        self.lock().settings.paused = true;
-        Ok(())
+        let original = record.wallpaper.ok_or_else(|| "Backlith has no record of your old wallpaper.".to_string())?;
+        // If the original file is gone, use the copy kept in base/ on first run.
+        let path = if Path::new(&original).exists() {
+            PathBuf::from(&original)
+        } else {
+            Path::new(&original)
+                .file_name()
+                .map(|name| self.data_dir.join("base").join(name))
+                .filter(|copy| copy.exists())
+                .ok_or_else(|| "Your old wallpaper's file is gone, and Backlith has no copy of it.".to_string())?
+        };
+        self.desktop.set_wallpaper(&path).map_err(|e| e.to_string())?;
+        // Stay paused, across restarts too, so no redraw covers it again.
+        let mut state = self.lock();
+        state.settings.paused = true;
+        self.save(&state)
     }
 
     fn new_id(state: &CoreState) -> String {
@@ -349,7 +372,7 @@ impl AppCore {
                 match read_ics(&text, "upload", self.tz, &upcoming(today)) {
                     Ok(_) => {}
                     Err(IcsError::NotCalendar) => return Err(UploadError::Invalid { errors: vec!["This file is not a calendar.".into()] }),
-                    Err(e @ IcsError::Parse(_)) => return Err(UploadError::Invalid { errors: vec![format!("This calendar file {e}.")] }),
+                    Err(IcsError::Parse(_)) => return Err(UploadError::Invalid { errors: vec!["This calendar file could not be read.".into()] }),
                 }
                 let stem = Path::new(&file_name).file_stem().and_then(|s| s.to_str()).unwrap_or("Calendar").to_string();
                 (stem, false)
@@ -471,6 +494,11 @@ impl AppCore {
 
     /// Called every minute: the render input when the wallpaper is due a redraw.
     pub fn tick(&self, now: NaiveDateTime) -> Option<RenderInput> {
+        // Nothing is drawn before the first Apply, so the undo record holds
+        // the user's own wallpaper, never one Backlith drew.
+        if !self.undo_path().exists() {
+            return None;
+        }
         {
             let mut state = self.lock();
             state.redraw.locked = self.desktop.session_locked();
