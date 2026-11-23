@@ -165,6 +165,85 @@ What waits for plan 2 (Windows): the real `Desktop` (icons through `IFolderView`
 
 A slip on the way: Rust's `target/` folder was not git-ignored at first, so the branch's early commits carried about 10,000 build files. They were taken out of the branch's history before anything was pushed, and `target/` is now ignored.
 
+## Plan 1 review and the calls made (23 November 2026)
+
+A fresh reviewer read the whole branch and answered "ready to merge with fixes": one critical finding, ten important and fourteen minor. Every critical and important one was fixed in one pass, each with a test that failed first, and one minor finding was raised to important. After the fixes: Rust 139 tests and interface 53 tests pass, and the interface builds.
+
+Fixed:
+
+- Critical 1, the link leaking as a Referer on redirects
+- Important 1, unsaved layout edits lost on any source change
+- Important 2, all-day titles shown with titles off
+- Important 3, overlapping events drawn on top of each other
+- Important 4, a BOM makes a calendar unreadable
+- Important 5, unknown TZIDs ignoring the file's VTIMEZONE and tzone://Microsoft names
+- Important 6, the pause after restoring the wallpaper not saved
+- Important 7, the undo record could hold Backlith's own picture
+- Important 9, no undo buttons in the planner
+- Important 10, keeping Auto arrange left no way to save
+- Minor 9 as re-graded
+
+Left for later (minor):
+
+- remove_source saves before deleting the secret, so a failed delete orphans the secret and skips forget().
+- a source removed while its link is being fetched can get its cache file and failure entry back.
+- "unreachable since" is in memory only and resets on restart.
+- "unreachable since HH:MM" is always 24-hour, and rangeLabel builds "23 – 29 November" by hand instead of Intl formatRange.
+- the viewer's time zone is read once at start-up.
+- the 20 MB cap is checked after a chunked body is fully buffered.
+- add_link downloads the calendar twice (check, then fetch).
+- a failed save in upload leaves the new source in memory; replacing an .ics with a .json leaves the old file.
+- decide_redraw stalls when the clock goes backwards (DST fall-back or a manual change).
+- the planner preview shows no base image, there is no way to change the base, and it doesn't listen to render-input.
+- sync commands parse calendars on the main thread, and uploads travel as JSON number arrays.
+- overlap errors name ids, removeZone mutates in place, all-lowercase ICS gives no events, SourcesPanel folds three planned files, 8 clippy warnings, index.html lacks an SPDX line.
+- saved types have no serde defaults, so adding a field later breaks older files.
+
+Every call Claude made on the author's behalf while building plan 1, with what it costs if wrong. Each line names the task it was made in; "Final" means the review.
+
+- Pre-flight: Ruling: Task 8's PlannerState, SourceStatus, ApplyResult and UploadError also derive TS and export to app/src/generated — the frontend needs them typed — cost if wrong: none, extra generated files.
+- Task 3: Ruling: the "did you mean" hint uses OSA distance (a swap of two letters is one edit) within max(1, length/3), not Levenshtein ≤ 2 — Levenshtein 2 suggested `from` for `room` — cost if wrong: a few typos of short names get no hint.
+- Task 3: Ruling: added messages the plan did not list but strict checking needs: "`every` and `skip` only go with `days`.", "`days` needs `from` and `until`, and they need `days`.", "`days` must list at least one day, like [\"mon\", \"thu\"].", "`skip` … ends before it starts.", "`skip` must be a list, …", "`end` X is the same as `start` X", "`allDay` must be true or false.", "`location` must be text.", "is not an object.", "The file is not plain text (UTF-8).", "The file must be one JSON object, starting with {." — cost if wrong: wording only.
+- Task 3: Ruling: serde_json gets `preserve_order` workspace-wide so errors come out in file order — cost if wrong: none.
+- Task 4: Ruling: CalendarToolSettings.calendar_ids empty means "every enabled calendar" — the first-run layout must show calendars added later without a second step — cost if wrong: a user who wants none shown must switch sources off.
+- Task 4: Ruling: an icon listed in two zones' icon_order goes to the first zone; zones fill only up to capacity and snapping clamps a rect inside the work area — the plan named neither — cost if wrong: small.
+- Task 5: Ruling: UndoRecord also carries `version`, so load_json's newer-version check covers it too — cost if wrong: one extra field.
+- Task 5: Ruling: a scheduled redraw is never later than the next midnight (decide_redraw returns At(min(last+interval, midnight))) — the spec redraws at midnight — cost if wrong: none.
+- Task 6: Ruling: failure reasons are fixed phrases chosen by the kind of error ("could not reach the calendar server", "the calendar server did not answer in time", "the calendar server answered N", "the link no longer returns a calendar", "the calendar is larger than 20 MB"), never reqwest's own text, which can contain the URL even after without_url() — cost if wrong: less detail for debugging.
+- Task 6: Ruling: calendars over 20 MB are refused, and source ids are made file-safe before naming cache files — the plan named neither — cost if wrong: a huge calendar would need the cap raised.
+- Task 6: Ruling: reqwest's default TLS (rustls with aws-lc-rs and the platform verifier) is kept. Note for plan 2: aws-lc-sys may need CMake/NASM or clang to build on Windows, especially ARM64; switch to the ring provider there if it does — cost if wrong: a build fix in plan 2.
+- Task 7: Ruling: formatTime uses two-digit hours when the locale's clock is 24-hour (hourCycle h23/h24) — en-GB with a numeric hour gives "9:30", but the plan pins "09:30" — cost if wrong: none.
+- Task 7: Ruling: the mockup fixture comes from a Rust example (crates/backlith-core/examples/mockup_render_input.rs) so the TypeScript tests run on the core's real output — cost if wrong: none.
+- Task 7: Ruling: events marked free are drawn with a lighter, dashed fill in every style, and an empty day in day stacks reads "Nothing planned" — the plan named neither — cost if wrong: looks only.
+- Task 8: Ruling: "Pause" is a check item (ticked while paused), keeping its exact label — cost if wrong: none.
+- Task 8: Ruling: "Restore my old wallpaper" also pauses Backlith, so the next redraw does not paint over the wallpaper just restored — cost if wrong: the user has to untick Pause to resume.
+- Task 8: Ruling: the app's CSP is left at Tauri's default (null) for now; plan 2 should set one once the renderer's asset loading is known — cost if wrong: weaker protection against injected scripts in the planner until then.
+- Task 8: Ruling: add_link checks the link (counting events) and fetches it into the cache before saving the source, and rolls back the secret if anything fails — cost if wrong: none.
+- Task 8: Ruling: the author said running the app on Ubuntu is pointless ("This is just for development"), so the plan's remaining "check by hand with pnpm tauri dev" steps (Tasks 9 and 10) are skipped; tests and builds are the checks until a Windows machine is available — cost if wrong: interface wiring errors that only show in the running app are found later, on Windows.
+- Task 9: Ruling: the planner previews where icons will go with a TypeScript copy of plan_icons (placeIcons), so dragging needs no round trip; Rust stays the authority on Apply — cost if wrong: a preview that differs from the result if the two drift (both follow the same tests' numbers).
+- Task 9: Ruling: dropping an icon into a zone writes every zone's icon order out in full, not only the target's — needed so the dropped icon leaves its old zone — cost if wrong: none.
+- Task 9: Ruling: growToFit also refuses a size that runs past the work area, and "Make bigger" says "No room to grow this zone." when blocked — cost if wrong: none.
+- Task 9: Ruling: the plan's by-hand check in `pnpm tauri dev` was skipped at the author's word (see Task 8) — cost if wrong: see Task 8.
+- Task 10: Ruling: added a `preview_week` command so the planner previews the week with unsaved calendar settings (weekend, week, full day) — the plan had no way to preview them without saving — cost if wrong: none.
+- Task 10: Ruling: the side panel can add, rename and remove icon zones and choose which takes new icons — the design says the user draws one or more zones, which the plan's tasks never offered — cost if wrong: none.
+- Task 10: Ruling: calendar sources (colour, on/off, add, remove, upload) take effect at once; only layout changes wait for Apply — cost if wrong: a user may expect Apply to cover them.
+- Task 10: Ruling: removing a calendar asks once in the row (Remove / Keep), not in a dialog — cost if wrong: none.
+- History: Ruling: Rust's target/ and app/src-tauri/gen/ had been committed from Task 1 on (10,069 files). Both are now git-ignored, and the branch was rewritten with filter-branch to drop them; source content is unchanged (checked with git diff against backup/core-and-planner-before-cleanup). New commits: Task 1 7c8db05, 2 2e3fc0d, 3 5b7afa5, 4 f17e11e, 5 2ef19b4, 6 cd9bc0b, 7 a3d3862, 8 69fa9f7, 9 54b97d5, 10 7700734. The SHAs in the lines above are the old ones. — cost if wrong: none; nothing was pushed.
+- Final: Ruling: Important 8, CI without Tauri's libraries — fixed in ci.yml with the README's apt line; it can only be checked by a CI run, which needs a push — cost if wrong: a red first CI run.
+- Final: Ruling: Windows Desktop, picture capture, installer, start at sign-in, folder watch, battery saver and lock state — plan 2 — cost if wrong: none now.
+- Final: Ruling: overflow icons stay where Windows put them, even over a tool — the spec says so; the planner warns and offers Make bigger — cost if wrong: an icon may cover part of the calendar until the zone is grown.
+- Final: Ruling: a valid but empty calendar replaces the cache — it can't be told from a calendar that really is empty — cost if wrong: a server returning an empty calendar by mistake empties it until fixed.
+- Final: Ruling: RANGE=THISANDFUTURE overrides and RDATE;VALUE=PERIOD are not handled — rare, not named — cost if wrong: such series show unchanged instances.
+- Final: Ruling: two copies of Backlith at once — start-up is plan 2 — cost if wrong: duplicated fetches until then.
+- Final: Ruling: keyboard-only editing of the canvas — the spec asks for mouse and touch — cost if wrong: the canvas is not usable by keyboard alone.
+- Final: Ruling: busy hours on a DST day use a 1440-minute day — the plan's explicit trade — cost if wrong: an hour off twice a year.
+- Final: Ruling: the CSP stays null until plan 2 — no innerHTML paths exist — cost if wrong: less protection if a script injection path appears.
+- Final: Ruling: RAM and CPU targets are measured on Windows in plan 2 — cost if wrong: none now.
+- Final: Ruling: the bundled fonts are OFL — bundling is aggregation, compatible with the GPL — cost if wrong: none.
+- Final: Ruling: "booked this week" also shows in Next-7-days mode — wording only — cost if wrong: slightly odd wording.
+- Final: Ruling: Credential Manager's size limit for very long links — needs Windows to test, plan 2 — cost if wrong: a very long link may not save on Windows.
+- Final: Ruling: put_icons_back doesn't turn Auto arrange back on — the spec promises positions only — cost if wrong: the user turns it back on by hand.
+
 ## Calendar data
 
 - **First:** ICS links, with no login. Google's "Secret address in iCal format", Outlook's "Publish calendar", iCloud's public calendar links.
