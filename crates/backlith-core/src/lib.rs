@@ -6,13 +6,17 @@
 pub mod icons;
 pub mod ics;
 pub mod layout;
+pub mod redraw;
 pub mod schedule;
+pub mod settings;
 pub mod week;
 pub mod zones_windows;
 
 pub use icons::*;
 pub use ics::*;
 pub use layout::*;
+pub use redraw::*;
 pub use schedule::*;
+pub use settings::*;
 pub use week::*;
 pub use zones_windows::*;
