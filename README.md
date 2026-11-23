@@ -8,7 +8,7 @@ Windows comes first. Ubuntu may follow.
 
 ## Status
 
-- **Plan 1, built:** everything that can be built and tested on Ubuntu. That covers the calendar engine, the schedule format, the layout and icon-zone maths, fetching calendar links, the three calendar styles and the planner app running against a pretend desktop. It lives on the branch `core-and-planner`.
+- **Plan 1, built:** everything that can be built and tested on Ubuntu. That covers the calendar engine, the schedule format, the layout and icon-zone maths, fetching calendar links, the three calendar styles and the planner app running against a pretend desktop. It was built on a branch and merged into `main` on 23 November 2026.
 - **Plan 2, not started:** the Windows parts, which wait for a Windows machine. These are moving real icons, drawing the wallpaper as a picture and setting it, starting at sign-in, and the installer.
 
 The design is `docs/superpowers/specs/2026-11-22-backlith-v1-design.md`, and the plans are in `docs/superpowers/plans/`. How it got here, and why, is in `docs/decisions.md`.

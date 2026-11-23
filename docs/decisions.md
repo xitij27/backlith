@@ -149,7 +149,7 @@ Mockups are in `docs/mockups/` (files for claude.ai's Design canvas; they need i
 
 ## Plan 1 built (22–23 November 2026)
 
-The author chose to build natively in one session ("can you do native development?") and to test on a proper Windows machine later. Plan 1, `docs/superpowers/plans/2026-11-22-backlith-core-and-planner.md`, is built on the branch `core-and-planner`.
+The author chose to build natively in one session ("can you do native development?") and to test on a proper Windows machine later. Plan 1, `docs/superpowers/plans/2026-11-22-backlith-core-and-planner.md`, was built on the branch `core-and-planner` and merged into `main` on 23 November 2026, at the author's choice ("merge to main locally"). The branch is deleted. Nothing of it is pushed yet: pushing is the author's to say.
 
 What exists:
 - **`backlith-core`:** the week model and busy levels, reading ICS (repeats, moved and deleted instances, Windows zone names from Outlook, DST), the schedule format with its JSON Schema and LLM prompt, layouts and icon zones, settings, the undo record and redraw timing.
