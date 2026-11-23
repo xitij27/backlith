@@ -4,7 +4,7 @@
 
 use std::sync::Arc;
 
-use backlith_core::{Layout, RenderInput};
+use backlith_core::{CalendarToolSettings, Layout, RenderInput, WeekView};
 use chrono::NaiveDateTime;
 use tauri::State;
 
@@ -69,4 +69,9 @@ pub fn llm_prompt(core: Core<'_>) -> String {
 #[tauri::command]
 pub fn render_input(core: Core<'_>) -> Result<RenderInput, String> {
     core.render_input(now()).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub fn preview_week(core: Core<'_>, settings: CalendarToolSettings) -> WeekView {
+    core.preview_week(now(), settings)
 }

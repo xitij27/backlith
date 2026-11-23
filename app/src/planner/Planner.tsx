@@ -9,6 +9,8 @@ import { toPx } from "../render/geometry";
 import { ApplyBar, AutoArrangeDialog } from "./ApplyBar";
 import { Canvas } from "./Canvas";
 import { collides } from "./geometry";
+import { SidePanel } from "./SidePanel";
+import type { WeekView } from "../generated/WeekView";
 
 const SIDE_PX = 360;
 const BAR_PX = 69;
@@ -53,6 +55,7 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [previewWeek, setPreviewWeek] = useState<WeekView | null>(null);
 
   const reload = useCallback(async () => {
     try {
@@ -67,6 +70,20 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
     void reload();
   }, [reload]);
   const viewScale = useViewScale(state?.screen);
+
+  // The week depends on the calendar's settings; preview it without saving.
+  const calendarItem = layout?.items.find((i) => i.item.kind === "calendar")?.item;
+  const calendarKey = calendarItem ? JSON.stringify(calendarItem) : "";
+  useEffect(() => {
+    if (!calendarItem || calendarItem.kind !== "calendar" || typeof api.previewWeek !== "function") return;
+    let live = true;
+    const { kind: _kind, ...settings } = calendarItem;
+    api.previewWeek(settings).then((w) => live && setPreviewWeek(w), () => {});
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calendarKey, api, state]);
 
   if (!state || !layout) {
     return <div style={{ padding: 24, color: error ? "#FF9F8A" : "#8C96A5" }}>{error ?? "Loading…"}</div>;
@@ -92,9 +109,9 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
       <ApplyBar canApply={layoutIsValid(layout, state)} busy={busy} message={message} error={error} onApply={() => (state.autoArrange ? setAsking(true) : void apply())} />
       <div style={{ display: "flex", flexWrap: "wrap", gap: MARGIN, padding: MARGIN }}>
         <div style={{ flex: "999 1 560px", minWidth: 0 }}>
-          <Canvas state={state} layout={layout} onChange={setLayout} viewScale={viewScale} selectedId={selectedId} onSelect={setSelectedId} locale={locale} />
+          <Canvas state={previewWeek ? { ...state, week: previewWeek } : state} layout={layout} onChange={setLayout} viewScale={viewScale} selectedId={selectedId} onSelect={setSelectedId} locale={locale} />
         </div>
-        <aside style={{ flex: `1 1 ${SIDE_PX - MARGIN}px`, minWidth: 0 }}>{sidePanel?.({ state, layout, selectedId, setLayout, reload })}</aside>
+        <aside style={{ flex: `1 1 ${SIDE_PX - MARGIN}px`, minWidth: 0 }}>{sidePanel ? sidePanel({ state, layout, selectedId, setLayout, reload }) : <SidePanel api={api} state={state} layout={layout} selectedId={selectedId} setLayout={setLayout} reload={reload} />}</aside>
       </div>
       {asking && <AutoArrangeDialog onContinue={() => void apply()} onCancel={() => setAsking(false)} />}
     </div>

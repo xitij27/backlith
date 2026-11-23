@@ -252,3 +252,16 @@ fn tick_redraws_when_dirty_then_waits() {
     assert!(!e.core.toggle_pause());
     assert!(e.core.tick(now + Duration::minutes(4)).is_some());
 }
+
+#[test]
+fn preview_week_uses_the_given_settings_without_saving() {
+    let e = env();
+    e.core.upload("uni.json".into(), EXAMPLE.as_bytes().to_vec(), false).unwrap();
+    let tool = backlith_core::CalendarToolSettings {
+        week: backlith_core::WeekOptions { show_weekend: false, ..Default::default() },
+        ..Default::default()
+    };
+    let week = e.core.preview_week(at("2026-11-25T13:40"), tool);
+    assert_eq!(week.days.len(), 5);
+    assert_eq!(e.core.planner_state(at("2026-11-25T13:40")).unwrap().week.days.len(), 7, "settings unchanged");
+}

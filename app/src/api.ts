@@ -2,10 +2,12 @@
 // Typed wrappers around the app's commands (app/src-tauri/src/commands.rs).
 import { invoke } from "@tauri-apps/api/core";
 import type { ApplyResult } from "./generated/ApplyResult";
+import type { CalendarToolSettings } from "./generated/CalendarToolSettings";
 import type { Layout } from "./generated/Layout";
 import type { PlannerState } from "./generated/PlannerState";
 import type { RenderInput } from "./generated/RenderInput";
 import type { SourceStatus } from "./generated/SourceStatus";
+import type { WeekView } from "./generated/WeekView";
 
 export const api = {
   plannerState: () => invoke<PlannerState>("planner_state"),
@@ -20,6 +22,8 @@ export const api = {
   removeSource: (id: string) => invoke<void>("remove_source", { id }),
   llmPrompt: () => invoke<string>("llm_prompt"),
   renderInput: () => invoke<RenderInput>("render_input"),
+  /** The week with these calendar settings, without saving them. */
+  previewWeek: (settings: CalendarToolSettings) => invoke<WeekView>("preview_week", { settings }),
 };
 
 export type Api = typeof api;

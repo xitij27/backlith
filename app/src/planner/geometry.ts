@@ -117,3 +117,17 @@ export function placeIcons(layout: Layout, icons: DesktopIcon[], workArea: RectP
   }
   return result;
 }
+
+/** The first free spot, scanning the grid row by row, for a zone 3 cells wide and 3 rows tall plus its label. */
+export function findFreeSpot(layout: Layout, workArea: RectPx, grid: IconGrid): RectPx | null {
+  const w = 3 * grid.cellW;
+  const h = labelPx(grid) + 3 * grid.cellH;
+  const taken = layout.items.map((i) => toPx(i.rect, workArea));
+  for (let y = workArea.y; y + h <= workArea.y + workArea.h; y += grid.cellH) {
+    for (let x = workArea.x; x + w <= workArea.x + workArea.w; x += grid.cellW) {
+      const spot = { x, y, w, h };
+      if (!collides(spot, taken)) return spot;
+    }
+  }
+  return null;
+}

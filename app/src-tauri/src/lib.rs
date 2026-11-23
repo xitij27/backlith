@@ -106,6 +106,7 @@ pub fn run() {
             commands::remove_source,
             commands::llm_prompt,
             commands::render_input,
+            commands::preview_week,
         ])
         .setup(move |app| {
             let paused = for_setup.planner_state(chrono::Local::now().naive_local()).map(|s| s.settings.paused).unwrap_or(false);

@@ -4,7 +4,9 @@ A Windows desktop background that holds useful tools. The first one shows the co
 
 ## Read first
 
-`docs/decisions.md` holds the research, what the author has said, the decisions and the open questions. Read it before working on the project.
+`docs/decisions.md` holds the research, what the author has said, the decisions and the open questions. Read it before working on the project. The design is `docs/superpowers/specs/2026-11-22-backlith-v1-design.md`; the plans are in `docs/superpowers/plans/`. Plan 1 (everything testable on Ubuntu) is built; plan 2 (the Windows parts) waits for a Windows machine.
+
+The author develops on Ubuntu and only wants the app run on Windows: don't launch it on Ubuntu to check it, use the tests and builds (see `README.md`).
 
 ## Keep all context here
 

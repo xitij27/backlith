@@ -190,7 +190,17 @@ impl AppCore {
     }
 
     fn week(&self, settings: &Settings, now: NaiveDateTime) -> WeekView {
-        let tool = calendar_settings(&settings.layout);
+        self.week_with(settings, &calendar_settings(&settings.layout), now)
+    }
+
+    /// The week as the calendar tool would show it with `tool`'s settings,
+    /// for the planner's preview before anything is saved.
+    pub fn preview_week(&self, now: NaiveDateTime, tool: CalendarToolSettings) -> WeekView {
+        let state = self.lock();
+        self.week_with(&state.settings, &tool, now)
+    }
+
+    fn week_with(&self, settings: &Settings, tool: &CalendarToolSettings, now: NaiveDateTime) -> WeekView {
         let (from, to) = week_dates(now, tool.week.mode);
         let range = DateRange { from: from - Duration::days(1), to: to + Duration::days(1) };
         let occurrences: Vec<Occurrence> = settings

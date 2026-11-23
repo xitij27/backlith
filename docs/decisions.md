@@ -147,6 +147,24 @@ Mockups are in `docs/mockups/` (files for claude.ai's Design canvas; they need i
 - Shared by all three: today highlighted, past events faded, a colour per calendar, a week summary (hours booked, busiest and lightest day), and a switch to hide the weekend. 8 hours counts as a full day: Light under 3 h, Steady 3 to 6 h, Busy 6 to 8 h, Packed 8 h or more.
 - The mockups' look (dark ground, Inter with Space Grotesk for numbers and headings, orange for work, blue for personal, red for packed) was Claude's call for the mockups, not decided.
 
+## Plan 1 built (22–23 November 2026)
+
+The author chose to build natively in one session ("can you do native development?") and to test on a proper Windows machine later. Plan 1, `docs/superpowers/plans/2026-11-22-backlith-core-and-planner.md`, is built on the branch `core-and-planner`.
+
+What exists:
+- **`backlith-core`:** the week model and busy levels, reading ICS (repeats, moved and deleted instances, Windows zone names from Outlook, DST), the schedule format with its JSON Schema and LLM prompt, layouts and icon zones, settings, the undo record and redraw timing.
+- **`backlith-sources`:** fetching calendar links with ETag and If-Modified-Since, keeping the last good copy on failure, and secrets in the system store.
+- **The Tauri app:** `AppCore`, the tray with its six items, the planner window opened on first run, a 15-minute fetch and a 1-minute redraw check, and a pretend desktop for Linux.
+- **The interface:** the wallpaper renderer with the three styles, and the planner (canvas with drag, resize, snapping, icon zones, Make bigger, Apply with the Auto arrange question, calendar settings, zones, calendar links, uploads, Copy prompt and Copy errors).
+- **Tests:** about 130 in Rust and 46 in the interface. CI runs both on Linux.
+
+What the author said while it was built:
+- "I don't understand why you're trying to run the application over here on Ubuntu. This is just for development." So the app is not launched on Ubuntu to check it; tests and builds are the checks until Windows. It had been run once, for about two minutes, and Claude could not see its window.
+
+What waits for plan 2 (Windows): the real `Desktop` (icons through `IFolderView`, `IDesktopWallpaper`, watching the desktop folders, battery saver and lock state), drawing the picture (spike 1 of the design), start at sign-in, the installers for x64 and ARM64, a CSP for the app, and checking reqwest's TLS (aws-lc-rs) builds on Windows ARM64.
+
+A slip on the way: Rust's `target/` folder was not git-ignored at first, so the branch's early commits carried about 10,000 build files. They were taken out of the branch's history before anything was pushed, and `target/` is now ignored.
+
 ## Calendar data
 
 - **First:** ICS links, with no login. Google's "Secret address in iCal format", Outlook's "Publish calendar", iCloud's public calendar links.
