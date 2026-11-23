@@ -44,7 +44,7 @@ enum Stamp {
 
 /// The instant a zone's wall-clock time means. A time that a DST change
 /// skips moves forward an hour; a time it repeats takes the first meaning.
-fn resolve(tz: Tz, n: NaiveDateTime) -> DateTime<Tz> {
+pub(crate) fn resolve(tz: Tz, n: NaiveDateTime) -> DateTime<Tz> {
     match tz.from_local_datetime(&n) {
         LocalResult::Single(t) => t,
         LocalResult::Ambiguous(first, _) => first,

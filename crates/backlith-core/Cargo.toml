@@ -14,5 +14,9 @@ icalendar = { version = "0.17", default-features = false, features = ["parser"] 
 rrule = "0.14"
 serde.workspace = true
 serde_json.workspace = true
+strsim = "0.11"
 thiserror.workspace = true
 ts-rs.workspace = true
+
+[dev-dependencies]
+jsonschema = { version = "0.63", default-features = false }

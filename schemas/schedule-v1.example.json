@@ -1,0 +1,23 @@
+{
+  "backlith": 1,
+  "name": "University timetable, winter 2026/27",
+  "timezone": "Europe/Berlin",
+  "events": [
+    {
+      "title": "Machine Learning (lecture)",
+      "location": "Room A1",
+      "days": ["mon", "thu"],
+      "start": "10:00",
+      "end": "11:40",
+      "from": "2026-10-19",
+      "until": "2027-02-12",
+      "skip": ["2026-12-21/2027-01-03"]
+    },
+    {
+      "title": "Exam: Databases",
+      "date": "2027-02-18",
+      "start": "09:00",
+      "end": "11:00"
+    }
+  ]
+}

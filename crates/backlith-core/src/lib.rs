@@ -4,9 +4,11 @@
 //! and Linux alike and is tested on Linux.
 
 pub mod ics;
+pub mod schedule;
 pub mod week;
 pub mod zones_windows;
 
 pub use ics::*;
+pub use schedule::*;
 pub use week::*;
 pub use zones_windows::*;
