@@ -36,13 +36,14 @@ export { LEVEL_LABEL };
 /** Text that stays on one line and ends in an ellipsis when too long. */
 export const oneLine = { whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" } as const;
 
-export function AllDayChips({ day, colors }: { day: DayView; colors: Map<string, string> }) {
+/** All-day events. With titles hidden, each reads "All day": the switch is for people who share their screen. */
+export function AllDayChips({ day, colors, showTitles }: { day: DayView; colors: Map<string, string>; showTitles: boolean }) {
   if (day.allDay.length === 0) return null;
   return (
     <div style={{ display: "flex", gap: 4, minWidth: 0 }}>
       {day.allDay.slice(0, 2).map((e, i) => (
         <span key={i} style={{ ...oneLine, fontSize: 11, padding: "2px 6px", borderRadius: 6, background: `${(colors.get(e.calendarId) ?? theme.fallbackCalendar).slice(0, 7)}3D`, minWidth: 0 }}>
-          {e.title}
+          {showTitles ? e.title : "All day"}
         </span>
       ))}
       {day.allDay.length > 2 && <span style={{ fontSize: 11, color: theme.muted }}>+{day.allDay.length - 2}</span>}

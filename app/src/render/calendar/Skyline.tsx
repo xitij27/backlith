@@ -37,7 +37,7 @@ export function Skyline({ week, settings, colors, height, locale }: StyleProps) 
             <div style={{ position: "relative", padding: "16px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ opacity: day.isPast ? 0.55 : 1, display: "flex", flexDirection: "column", gap: 6 }}>
                 <DayName day={day} locale={locale} />
-                <AllDayChips day={day} colors={colors} />
+                <AllDayChips day={day} colors={colors} showTitles={settings.showTitles} />
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                 {day.events.slice(0, shown).map((e, i) => (

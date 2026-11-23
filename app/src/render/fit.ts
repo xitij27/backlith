@@ -27,3 +27,33 @@ export function visibleHours(week: WeekView): [number, number] {
   }
   return [start, Math.min(24, end)];
 }
+
+/**
+ * Side-by-side lanes for one day's events, in input order: events that
+ * overlap, directly or through others, share a group and each gets its
+ * own lane, so none is drawn on top of another.
+ */
+export function lanes(events: { startMinute: number; endMinute: number }[]): { lane: number; of: number }[] {
+  const out = events.map(() => ({ lane: 0, of: 1 }));
+  const order = events.map((_, i) => i).sort((a, b) => events[a].startMinute - events[b].startMinute || events[a].endMinute - events[b].endMinute);
+  let group: number[] = [];
+  let laneEnds: number[] = [];
+  let groupEnd = -1;
+  const close = () => group.forEach((i) => (out[i].of = laneEnds.length));
+  for (const i of order) {
+    const e = events[i];
+    if (group.length > 0 && e.startMinute >= groupEnd) {
+      close();
+      group = [];
+      laneEnds = [];
+    }
+    let lane = laneEnds.findIndex((end) => end <= e.startMinute);
+    if (lane === -1) lane = laneEnds.push(0) - 1;
+    laneEnds[lane] = e.endMinute;
+    out[i].lane = lane;
+    group.push(i);
+    groupEnd = Math.max(groupEnd, e.endMinute);
+  }
+  close();
+  return out;
+}

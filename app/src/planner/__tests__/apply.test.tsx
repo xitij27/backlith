@@ -46,3 +46,12 @@ test("later applies go straight through", async () => {
   expect(await screen.findByText("Moved 8 icons.")).toBeInTheDocument();
   expect(calls).toEqual(["save", "apply"]);
 });
+
+test("keeping auto arrange still saves the layout", async () => {
+  const { api, calls } = fakeApi(true);
+  render(<Planner api={api} locale="en-GB" />);
+  fireEvent.click(await screen.findByRole("button", { name: "Apply" }));
+  fireEvent.click(screen.getByRole("button", { name: "Save without moving icons" }));
+  expect(await screen.findByText("Saved. Your icons were not moved, so they may cover your tools.")).toBeInTheDocument();
+  expect(calls).toEqual(["save"]);
+});

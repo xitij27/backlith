@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 // The planner window: the canvas, the side panel, and Apply.
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { api as realApi, type Api } from "../api";
 import type { ApplyResult } from "../generated/ApplyResult";
 import type { Layout } from "../generated/Layout";
@@ -56,12 +56,16 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [previewWeek, setPreviewWeek] = useState<WeekView | null>(null);
+  const saved = useRef<Layout | null>(null);
 
   const reload = useCallback(async () => {
     try {
       const s = await api.plannerState();
       setState(s);
-      setLayout(s.settings.layout);
+      // Keep edits that haven't been applied: only take the saved layout
+      // when the one on screen is still the last one loaded.
+      setLayout((current) => (current && saved.current && JSON.stringify(current) !== JSON.stringify(saved.current) ? current : s.settings.layout));
+      saved.current = s.settings.layout;
     } catch (e) {
       setError(String(e));
     }
@@ -104,6 +108,21 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
     }
   };
 
+  const saveOnly = async () => {
+    setAsking(false);
+    setBusy(true);
+    setError(null);
+    try {
+      await api.saveLayout(layout);
+      setMessage("Saved. Your icons were not moved, so they may cover your tools.");
+      await reload();
+    } catch (e) {
+      setError(typeof e === "string" ? e : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "#0B0E13", color: "#E6EBF2", fontFamily: "Inter, system-ui, sans-serif" }}>
       <ApplyBar canApply={layoutIsValid(layout, state)} busy={busy} message={message} error={error} onApply={() => (state.autoArrange ? setAsking(true) : void apply())} />
@@ -113,7 +132,7 @@ export function Planner({ api = realApi, locale, sidePanel }: { api?: Api; local
         </div>
         <aside style={{ flex: `1 1 ${SIDE_PX - MARGIN}px`, minWidth: 0 }}>{sidePanel ? sidePanel({ state, layout, selectedId, setLayout, reload }) : <SidePanel api={api} state={state} layout={layout} selectedId={selectedId} setLayout={setLayout} reload={reload} />}</aside>
       </div>
-      {asking && <AutoArrangeDialog onContinue={() => void apply()} onCancel={() => setAsking(false)} />}
+      {asking && <AutoArrangeDialog onContinue={() => void apply()} onSaveOnly={() => void saveOnly()} onCancel={() => setAsking(false)} />}
     </div>
   );
 }

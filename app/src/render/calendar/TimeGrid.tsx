@@ -2,7 +2,7 @@
 // Hours down the side, events as blocks at their real times, and a "now"
 // line in today's column. docs/mockups/TimeGrid.dc.html.
 import type { DayEvent } from "../../generated/DayEvent";
-import { visibleHours } from "../fit";
+import { lanes, visibleHours } from "../fit";
 import { formatHours, formatTime } from "../format";
 import { ink, theme, tint } from "../theme";
 import type { StyleProps } from "./CalendarBlock";
@@ -11,14 +11,15 @@ import { AllDayChips, DayName, FullnessBar, LEVEL_LABEL, levelColor, oneLine } f
 const DAY_HEAD_PX = 92;
 const GUTTER_PX = 56;
 
-function EventBlock({ e, top, height, color, showTitles, locale }: { e: DayEvent; top: number; height: number; color: string; showTitles: boolean; locale?: string }) {
+function EventBlock({ e, top, height, color, showTitles, locale, lane }: { e: DayEvent; top: number; height: number; color: string; showTitles: boolean; locale?: string; lane: { lane: number; of: number } }) {
   const short = height < 34;
   return (
     <div
+      data-lane={`${lane.lane}/${lane.of}`}
       style={{
         position: "absolute",
-        left: 4,
-        right: 4,
+        left: `calc(${(lane.lane * 100) / lane.of}% + 4px)`,
+        width: `calc(${100 / lane.of}% - 8px)`,
         top,
         height: Math.max(2, height),
         boxSizing: "border-box",
@@ -57,7 +58,7 @@ export function TimeGrid({ week, settings, colors, height, locale }: StyleProps)
             <DayName day={day} locale={locale} />
             <FullnessBar day={day} fullDay={settings.week.fullDayMinutes} />
             <div style={{ fontSize: 12, color: levelColor(day) }}>{`${formatHours(day.bookedMinutes)} · ${LEVEL_LABEL[day.level]}`}</div>
-            <AllDayChips day={day} colors={colors} />
+            <AllDayChips day={day} colors={colors} showTitles={settings.showTitles} />
           </div>
         ))}
       </div>
@@ -69,7 +70,9 @@ export function TimeGrid({ week, settings, colors, height, locale }: StyleProps)
           </div>
         ))}
         <div style={{ position: "absolute", left: GUTTER_PX, right: 0, top: 0, bottom: 0, display: "grid", gridTemplateColumns: columns }}>
-          {week.days.map((day) => (
+          {week.days.map((day) => {
+            const placed = lanes(day.events);
+            return (
             <div key={day.date} data-testid="day-column" style={{ position: "relative", borderLeft: `1px solid ${theme.line}`, background: day.isToday ? "rgba(255,255,255,0.035)" : "transparent" }}>
               {day.events.map((e, i) => (
                 <EventBlock
@@ -80,6 +83,7 @@ export function TimeGrid({ week, settings, colors, height, locale }: StyleProps)
                   color={colors.get(e.calendarId) ?? theme.fallbackCalendar}
                   showTitles={settings.showTitles}
                   locale={locale}
+                  lane={placed[i]}
                 />
               ))}
               {day.isToday && (
@@ -88,7 +92,8 @@ export function TimeGrid({ week, settings, colors, height, locale }: StyleProps)
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

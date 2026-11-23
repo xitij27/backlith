@@ -5,7 +5,7 @@ import type { CalendarToolSettings } from "../../generated/CalendarToolSettings"
 import type { RenderInput } from "../../generated/RenderInput";
 import type { WeekView } from "../../generated/WeekView";
 import { DAY_STACK_HEAD_PX, DayStacks, ITEM_PX } from "../calendar/DayStacks";
-import { fitCount, skylineFillPx, visibleHours } from "../fit";
+import { fitCount, lanes, skylineFillPx, visibleHours } from "../fit";
 import { formatHours, formatTime } from "../format";
 import { Wallpaper } from "../Wallpaper";
 import fixture from "./mockup-week.json";
@@ -121,4 +121,35 @@ test("the base colour fills the screen", () => {
   expect(root.style.width).toBe("1920px");
   expect(root.style.height).toBe("1080px");
   expect(root.style.background).toContain("rgb(13, 17, 23)");
+});
+
+test("hidden titles hide all-day titles too", () => {
+  const input = withCalendar("timeGrid", { showTitles: false });
+  input.week.days[3].allDay = [{ calendarId: "personal", title: "Holiday" }];
+  render(<Wallpaper input={input} locale="en-GB" />);
+  expect(screen.queryByText("Holiday")).toBeNull();
+  expect(screen.getByText("All day")).toBeInTheDocument();
+});
+
+test("lanes split overlapping events", () => {
+  const ev = (startMinute: number, endMinute: number) => ({ startMinute, endMinute });
+  expect(lanes([ev(600, 660), ev(630, 720), ev(780, 840)])).toEqual([
+    { lane: 0, of: 2 },
+    { lane: 1, of: 2 },
+    { lane: 0, of: 1 },
+  ]);
+  expect(lanes([ev(600, 660), ev(660, 720)])).toEqual([
+    { lane: 0, of: 1 },
+    { lane: 0, of: 1 },
+  ]);
+});
+
+test("overlapping events sit side by side in the time grid", () => {
+  const input = withCalendar("timeGrid");
+  const thursday = input.week.days[3];
+  thursday.events.push({ ...thursday.events[1], title: "Overlap", startMinute: 850, endMinute: 920 });
+  render(<Wallpaper input={input} locale="en-GB" />);
+  expect(screen.getByText("Dentist").closest("[data-lane]")).toHaveAttribute("data-lane", "0/2");
+  expect(screen.getByText("Overlap").closest("[data-lane]")).toHaveAttribute("data-lane", "1/2");
+  expect(screen.getAllByText("Standup")[3].closest("[data-lane]")).toHaveAttribute("data-lane", "0/1");
 });

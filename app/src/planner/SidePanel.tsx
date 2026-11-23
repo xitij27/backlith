@@ -21,6 +21,16 @@ function zoneOf(item: LayoutItem): ZoneSettings | null {
 
 export function SidePanel({ api, state, layout, selectedId, setLayout, reload }: Props) {
   const [noRoom, setNoRoom] = useState(false);
+  const [undoNote, setUndoNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const undo = async (run: () => Promise<void>, done: string) => {
+    try {
+      await run();
+      setUndoNote({ ok: true, text: done });
+      await reload();
+    } catch (e) {
+      setUndoNote({ ok: false, text: typeof e === "string" ? e : String(e) });
+    }
+  };
   const calendar = layout.items.find((i) => i.item.kind === "calendar");
   const selected = layout.items.find((i) => i.id === selectedId && i.item.kind === "iconZone");
   const zones = layout.items.filter((i) => i.item.kind === "iconZone");
@@ -92,6 +102,17 @@ export function SidePanel({ api, state, layout, selectedId, setLayout, reload }:
         {noRoom && <Note tone="error">No free space for a new zone. Make room first.</Note>}
       </Section>
       <SourcesPanel api={api} state={state} reload={reload} />
+      <Section title="Undo">
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button type="button" style={secondary} onClick={() => void undo(api.putIconsBack, "Your icons are back where they were.")}>
+            Put my icons back
+          </button>
+          <button type="button" style={secondary} onClick={() => void undo(api.restoreWallpaper, "Your old wallpaper is back. Backlith is paused until you resume it from the tray.")}>
+            Restore my old wallpaper
+          </button>
+        </div>
+        {undoNote && <Note tone={undoNote.ok ? "good" : "error"}>{undoNote.text}</Note>}
+      </Section>
     </div>
   );
 }

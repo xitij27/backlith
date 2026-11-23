@@ -48,7 +48,7 @@ export function DayStacks({ week, settings, colors, height, locale }: StyleProps
                 <span style={{ fontSize: 13, fontWeight: 500, color: levelColor(day) }}>{LEVEL_LABEL[day.level]}</span>
               </div>
               <FullnessBar day={day} fullDay={settings.week.fullDayMinutes} />
-              <AllDayChips day={day} colors={colors} />
+              <AllDayChips day={day} colors={colors} showTitles={settings.showTitles} />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {items.slice(0, shown).map((it, i) => {
