@@ -3,12 +3,16 @@
 //! schedules, layouts and icon zones. Everything here compiles for Windows
 //! and Linux alike and is tested on Linux.
 
+pub mod icons;
 pub mod ics;
+pub mod layout;
 pub mod schedule;
 pub mod week;
 pub mod zones_windows;
 
+pub use icons::*;
 pub use ics::*;
+pub use layout::*;
 pub use schedule::*;
 pub use week::*;
 pub use zones_windows::*;
