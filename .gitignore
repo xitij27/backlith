@@ -19,3 +19,6 @@ desktop.ini
 
 # Assistant scratch for executing plans
 .superpowers/
+
+# Interface build output
+app/dist/

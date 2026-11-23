@@ -1,0 +1,466 @@
+{
+  "layout": {
+    "version": 1,
+    "base": {
+      "kind": "color",
+      "hex": "#0D1117"
+    },
+    "items": [
+      {
+        "id": "zone-1",
+        "rect": {
+          "x": 0.0,
+          "y": 0.0,
+          "w": 0.052083333333333336,
+          "h": 1.0
+        },
+        "item": {
+          "kind": "iconZone",
+          "name": "Downloads",
+          "takesNewIcons": true,
+          "iconOrder": [
+            "C:\\Users\\me\\Desktop\\Recycle Bin",
+            "C:\\Users\\me\\Desktop\\Projects",
+            "C:\\Users\\me\\Desktop\\Downloads",
+            "C:\\Users\\me\\Desktop\\Notes.txt",
+            "C:\\Users\\me\\Desktop\\Report.pdf",
+            "C:\\Users\\me\\Desktop\\Photos",
+            "C:\\Users\\me\\Desktop\\Terminal",
+            "C:\\Users\\me\\Desktop\\Music"
+          ]
+        }
+      },
+      {
+        "id": "calendar",
+        "rect": {
+          "x": 0.10416666666666667,
+          "y": 0.0,
+          "w": 0.8958333333333334,
+          "h": 1.0
+        },
+        "item": {
+          "kind": "calendar",
+          "style": "timeGrid",
+          "week": {
+            "mode": "thisWeek",
+            "showWeekend": true,
+            "fullDayMinutes": 480
+          },
+          "calendarIds": [],
+          "showTitles": true
+        }
+      }
+    ]
+  },
+  "week": {
+    "days": [
+      {
+        "date": "2026-11-23",
+        "weekday": "mon",
+        "isToday": false,
+        "isPast": true,
+        "bookedMinutes": 270,
+        "level": "steady",
+        "events": [
+          {
+            "calendarId": "work",
+            "title": "Standup",
+            "location": null,
+            "startMinute": 540,
+            "endMinute": 570,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Lecture · Machine Learning",
+            "location": null,
+            "startMinute": 600,
+            "endMinute": 720,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "1:1 with supervisor",
+            "location": null,
+            "startMinute": 840,
+            "endMinute": 900,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Gym",
+            "location": null,
+            "startMinute": 1080,
+            "endMinute": 1140,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 720,
+            "endMinute": 840
+          },
+          {
+            "startMinute": 900,
+            "endMinute": 1080
+          }
+        ]
+      },
+      {
+        "date": "2026-11-24",
+        "weekday": "tue",
+        "isToday": false,
+        "isPast": true,
+        "bookedMinutes": 270,
+        "level": "steady",
+        "events": [
+          {
+            "calendarId": "work",
+            "title": "Standup",
+            "location": null,
+            "startMinute": 540,
+            "endMinute": 570,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Design review",
+            "location": null,
+            "startMinute": 660,
+            "endMinute": 750,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Lunch with the team",
+            "location": null,
+            "startMinute": 780,
+            "endMinute": 840,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Lab session",
+            "location": null,
+            "startMinute": 960,
+            "endMinute": 1050,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 570,
+            "endMinute": 660
+          },
+          {
+            "startMinute": 840,
+            "endMinute": 960
+          }
+        ]
+      },
+      {
+        "date": "2026-11-25",
+        "weekday": "wed",
+        "isToday": true,
+        "isPast": false,
+        "bookedMinutes": 480,
+        "level": "packed",
+        "events": [
+          {
+            "calendarId": "work",
+            "title": "Standup",
+            "location": null,
+            "startMinute": 540,
+            "endMinute": 570,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Lecture · Databases",
+            "location": null,
+            "startMinute": 600,
+            "endMinute": 690,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Lunch",
+            "location": null,
+            "startMinute": 720,
+            "endMinute": 780,
+            "done": true,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Project sync",
+            "location": null,
+            "startMinute": 810,
+            "endMinute": 900,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Deep work",
+            "location": null,
+            "startMinute": 930,
+            "endMinute": 1020,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Hackathon prep",
+            "location": null,
+            "startMinute": 1140,
+            "endMinute": 1260,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 1020,
+            "endMinute": 1140
+          }
+        ]
+      },
+      {
+        "date": "2026-11-26",
+        "weekday": "thu",
+        "isToday": false,
+        "isPast": false,
+        "bookedMinutes": 90,
+        "level": "light",
+        "events": [
+          {
+            "calendarId": "work",
+            "title": "Standup",
+            "location": null,
+            "startMinute": 540,
+            "endMinute": 570,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Dentist",
+            "location": null,
+            "startMinute": 840,
+            "endMinute": 900,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 570,
+            "endMinute": 840
+          }
+        ]
+      },
+      {
+        "date": "2026-11-27",
+        "weekday": "fri",
+        "isToday": false,
+        "isPast": false,
+        "bookedMinutes": 390,
+        "level": "busy",
+        "events": [
+          {
+            "calendarId": "work",
+            "title": "Standup",
+            "location": null,
+            "startMinute": 540,
+            "endMinute": 570,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "work",
+            "title": "Lecture · Machine Learning",
+            "location": null,
+            "startMinute": 600,
+            "endMinute": 720,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Hackathon",
+            "location": null,
+            "startMinute": 780,
+            "endMinute": 1020,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 720,
+            "endMinute": 780
+          }
+        ]
+      },
+      {
+        "date": "2026-11-28",
+        "weekday": "sat",
+        "isToday": false,
+        "isPast": false,
+        "bookedMinutes": 240,
+        "level": "steady",
+        "events": [
+          {
+            "calendarId": "personal",
+            "title": "Football",
+            "location": null,
+            "startMinute": 660,
+            "endMinute": 780,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          },
+          {
+            "calendarId": "personal",
+            "title": "Dinner with friends",
+            "location": null,
+            "startMinute": 1200,
+            "endMinute": 1320,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": [
+          {
+            "startMinute": 780,
+            "endMinute": 1200
+          }
+        ]
+      },
+      {
+        "date": "2026-11-29",
+        "weekday": "sun",
+        "isToday": false,
+        "isPast": false,
+        "bookedMinutes": 60,
+        "level": "light",
+        "events": [
+          {
+            "calendarId": "personal",
+            "title": "Call home",
+            "location": null,
+            "startMinute": 960,
+            "endMinute": 1020,
+            "done": false,
+            "countsAsBusy": true,
+            "continuesFromPreviousDay": false,
+            "continuesToNextDay": false
+          }
+        ],
+        "allDay": [],
+        "freeGaps": []
+      }
+    ],
+    "totalBookedMinutes": 1800,
+    "busiest": {
+      "date": "2026-11-25",
+      "bookedMinutes": 480
+    },
+    "lightest": {
+      "date": "2026-11-29",
+      "bookedMinutes": 60
+    },
+    "nowMinute": 820
+  },
+  "calendars": [
+    {
+      "id": "work",
+      "name": "Work · Outlook",
+      "color": "#F5B65C",
+      "enabled": true,
+      "kind": {
+        "kind": "link"
+      }
+    },
+    {
+      "id": "personal",
+      "name": "Personal · Google",
+      "color": "#5A8CF0",
+      "enabled": true,
+      "kind": {
+        "kind": "link"
+      }
+    }
+  ],
+  "screen": {
+    "x": 0,
+    "y": 0,
+    "w": 1920,
+    "h": 1080
+  },
+  "workArea": {
+    "x": 0,
+    "y": 0,
+    "w": 1920,
+    "h": 1032
+  },
+  "scale": 1.0
+}
