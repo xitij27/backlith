@@ -1,0 +1,38 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[package]
+name = "backlith-app"
+description = "Backlith: a desktop background that holds useful tools."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+name = "backlith_app"
+path = "src/lib.rs"
+
+[[bin]]
+name = "backlith"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.7", features = [] }
+
+[dependencies]
+anyhow = "1"
+backlith-core = { path = "../../crates/backlith-core" }
+backlith-sources = { path = "../../crates/backlith-sources" }
+chrono.workspace = true
+chrono-tz.workspace = true
+dirs = "6"
+iana-time-zone = "0.1"
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2.12", features = ["tray-icon"] }
+tokio = { version = "1", features = ["time"] }
+ts-rs.workspace = true
+
+[dev-dependencies]
+httpmock = "0.9"
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

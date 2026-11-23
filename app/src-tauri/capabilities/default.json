@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "planner",
+  "description": "What the planner window may do: Backlith's own commands and listening for redraws.",
+  "windows": ["planner"],
+  "permissions": ["core:default"]
+}
