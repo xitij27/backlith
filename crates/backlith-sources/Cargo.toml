@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[package]
+name = "backlith-sources"
+description = "Fetching Backlith's calendar links, and keeping them secret."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+backlith-core = { path = "../backlith-core" }
+chrono.workspace = true
+chrono-tz.workspace = true
+keyring = "4"
+reqwest = "0.13"
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+httpmock = "0.9"
+tempfile = "3"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
